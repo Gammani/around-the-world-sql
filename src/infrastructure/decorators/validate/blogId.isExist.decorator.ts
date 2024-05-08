@@ -6,7 +6,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { BlogsService } from '../../../features/blogs/application/blogs.service';
+import { BlogsService } from '../../../features/public/blogs/application/blogs.service';
 
 export function BlogIdIsExist(
   property?: string,

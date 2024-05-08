@@ -1,6 +1,6 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
-import { JwtService } from '../../../features/auth/application/jwt.service';
 import { TokenPayloadType } from '../../../features/types';
+import { JwtService } from '../../../features/public/auth/application/jwt.service';
 
 @Injectable()
 export class CheckToken {

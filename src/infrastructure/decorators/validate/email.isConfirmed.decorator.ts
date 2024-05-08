@@ -6,7 +6,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { UsersService } from '../../../features/users/application/users.service';
+import { UsersService } from '../../../features/super-admin/users/application/users.service';
 
 export function EmailIsConfirmed(
   property?: string,

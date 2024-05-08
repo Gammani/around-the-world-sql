@@ -4,25 +4,31 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './features/users/users.module';
-import { RemoveAllModule } from './features/testing.removeAll/removeAll.module';
-import { BlogModule } from './features/blogs/blog.module';
-import { PostModule } from './features/posts/post.module';
-import { AuthModule } from './features/auth/auth.module';
-import { ExpiredTokenModule } from './features/expiredToken/expired.token.module';
-import { CommentModule } from './features/comments/comment.module';
-import { SecurityDeviceModule } from './features/devices/sequrity.device.module';
 import { CqrsModule } from '@nestjs/cqrs';
-import { User, UserSchema } from './features/users/domain/user.entity';
-import { UsersRepository } from './features/users/infrastructure/users.repository';
 import { EmailManager } from './features/adapter/email.manager';
 import { PasswordAdapter } from './features/adapter/password.adapter';
 import { JwtMiddleware } from './infrastructure/middleware/jwt.middleware';
-import { JwtService } from './features/auth/application/jwt.service';
-import { SecurityDevicesService } from './features/devices/application/security.devices.service';
-import { Device, DeviceSchema } from './features/devices/domain/devices.entity';
-import { DeviceRepository } from './features/devices/infrastructure/device.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './features/public/auth/auth.module';
+import { RemoveAllModule } from './features/super-admin/testing.removeAll/removeAll.module';
+import { UsersModule } from './features/super-admin/users/users.module';
+import { BlogModule } from './features/public/blogs/blog.module';
+import { PostModule } from './features/public/posts/post.module';
+import { CommentModule } from './features/public/comments/comment.module';
+import { ExpiredTokenModule } from './features/public/expiredToken/expired.token.module';
+import { SecurityDeviceModule } from './features/public/devices/sequrity.device.module';
+import {
+  User,
+  UserSchema,
+} from './features/super-admin/users/domain/user.entity';
+import {
+  Device,
+  DeviceSchema,
+} from './features/public/devices/domain/devices.entity';
+import { UsersRepository } from './features/super-admin/users/infrastructure/users.repository';
+import { SecurityDevicesService } from './features/public/devices/application/security.devices.service';
+import { DeviceRepository } from './features/public/devices/infrastructure/device.repository';
+import { JwtService } from './features/public/auth/application/jwt.service';
 
 @Module({
   imports: [
