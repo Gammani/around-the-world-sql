@@ -17,12 +17,12 @@ import { UsersService } from '../application/users.service';
 import { UserCreateModel } from './models/input/create-user.input.model';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetAllQueryUsersCommand } from '../application/use-cases/getAllQueryUsers.useCase';
-import { GetUserByIdCommand } from '../application/use-cases/getUserById.useCase';
 import { CreateUserByAdminCommand } from '../application/use-cases/createUserByAdmin.useCase';
 import { DeleteUserByAdminCommand } from '../application/use-cases/deleteUserByAdmin.useCase';
 import { BasicAuthGuard } from '../../../public/auth/guards/basic-auth.guard';
+import { GetUserViewModelByUserIdCommand } from '../application/use-cases/getUserViewModelByUserId.useCase';
 
-@Controller('users')
+@Controller('sa/users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
@@ -58,10 +58,10 @@ export class UsersController {
   @Get(':id')
   async findUserById(@Param('id') userId: string) {
     const foundUser = await this.commandBus.execute(
-      new GetUserByIdCommand(userId),
+      new GetUserViewModelByUserIdCommand(userId),
     );
     if (foundUser) {
-      return await this.commandBus.execute(new GetUserByIdCommand(userId));
+      return foundUser;
     } else {
       throw new NotFoundException();
     }

@@ -6,10 +6,9 @@ import {
   UserViewModel,
   UserWithPaginationViewModel,
 } from '../api/models/output/user.output.model';
-import { ObjectId } from 'mongodb';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { UserDbType } from '../../../types';
+import { validate as validateUUID } from 'uuid';
 
 @Injectable()
 export class UsersQueryRepository {
@@ -17,102 +16,6 @@ export class UsersQueryRepository {
     @InjectDataSource() private dataSource: DataSource,
     @InjectModel(User.name) private UserModel: Model<UserDocument>,
   ) {}
-
-  // async findAllUsers(
-  //   searchLoginTermQuery: string | undefined,
-  //   searchEmailTermQuery: string | undefined,
-  //   pageNumberQuery: string | undefined,
-  //   pageSizeQuery: string | undefined,
-  //   sortByQuery: string | undefined,
-  //   sortDirectionQuery: string | undefined,
-  // ): Promise<UserWithPaginationViewModel> {
-  //   const searchLoginTerm = searchLoginTermQuery ? searchLoginTermQuery : '';
-  //   const searchEmailTerm = searchEmailTermQuery ? searchEmailTermQuery : '';
-  //   const pageNumber = isNaN(Number(pageNumberQuery))
-  //     ? 1
-  //     : Number(pageNumberQuery);
-  //   const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery);
-  //   const sortBy = sortByQuery
-  //     ? `accountData.${sortByQuery}`
-  //     : 'accountData.createdAt';
-  //   const sortDirection = sortDirectionQuery === 'asc' ? 1 : -1;
-  //
-  //   let totalCount;
-  //   let users;
-  //
-  //   if (searchLoginTerm || searchEmailTerm) {
-  //     totalCount = await this.UserModel.countDocuments({
-  //       $or: [
-  //         { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
-  //         { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
-  //       ],
-  //     });
-  //     //   $and: [
-  //     //     {
-  //     //       $or: [
-  //     //         {
-  //     //           'accountData.login': { $regex: searchLoginTerm, $options: 'i' },
-  //     //         },
-  //     //         {
-  //     //           'accountData.email': { $regex: searchEmailTerm, $options: 'i' },
-  //     //         },
-  //     //       ],
-  //     //     },
-  //     //   ],
-  //     // });
-  //     users = await this.UserModel.find({
-  //       $or: [
-  //         { 'accountData.login': { $regex: searchLoginTerm, $options: 'i' } },
-  //         { 'accountData.email': { $regex: searchEmailTerm, $options: 'i' } },
-  //       ],
-  //     })
-  //       //   $and: [
-  //       //     {
-  //       //       $or: [
-  //       //         {
-  //       //           'accountData.login': { $regex: searchLoginTerm, $options: 'i' },
-  //       //         },
-  //       //         {
-  //       //           'accountData.email': { $regex: searchEmailTerm, $options: 'i' },
-  //       //         },
-  //       //       ],
-  //       //     },
-  //       //   ],
-  //       // })
-  //       .sort({ [sortBy]: sortDirection })
-  //       .skip((pageNumber - 1) * pageSize)
-  //       .limit(pageSize);
-  //   } else {
-  //     totalCount = await this.UserModel.countDocuments({});
-  //
-  //     users = await this.UserModel.find({})
-  //       .sort({ [sortBy]: sortDirection })
-  //       .skip((pageNumber - 1) * pageSize)
-  //       .limit(pageSize);
-  //   }
-  //
-  //   const pagesCount = Math.ceil(totalCount / pageSize);
-  //
-  //   // const userViewModels: UserOutputModel[] = users.map((user) => ({
-  //   //   id: user._id.toString(),
-  //   //   login: user.accountData.login,
-  //   //   email: user.accountData.email,
-  //   //   createdAt: user.accountData.createdAt,
-  //   // }));
-  //
-  //   return {
-  //     pagesCount,
-  //     page: pageNumber,
-  //     pageSize,
-  //     totalCount,
-  //     items: users.map((user) => ({
-  //       id: user._id.toString(),
-  //       login: user.accountData.login,
-  //       email: user.accountData.email,
-  //       createdAt: user.accountData.createdAt,
-  //     })),
-  //   };
-  // }
 
   async findAllUsers(
     searchLoginTermQuery: string | undefined,
@@ -128,29 +31,70 @@ export class UsersQueryRepository {
       ? 1
       : Number(pageNumberQuery);
     const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery);
-    const sortBy = sortByQuery
-      ? `accountData.${sortByQuery}`
-      : 'accountData.createdAt';
+    const sortBy = sortByQuery ? `${sortByQuery}` : 'account."createdAt"';
 
-    const sortDirection = sortDirectionQuery === 'asc' ? 1 : -1;
+    const sortDirection = sortDirectionQuery === 'asc' ? 'asc' : 'desc';
 
-    const result = await this.dataSource
-      .query(`SELECT id, login, email, "createdAt", "passwordHash", "recoveryCode"
-\tFROM public."UserAccountData";`);
-    console.log(result);
-    return result;
+    const totalUsers = await this.dataSource.query(
+      `    SELECT account."id", account.login, account.email, account."createdAt", account."passwordHash",
+        account."recoveryCode", email."confirmationCode", email."expirationDate"
+    FROM public."UserAccountData" as account
+    LEFT JOIN "UserEmailData" as email
+    ON account."id" = email."userId"
+    WHERE "email" like '%${searchEmailTerm}%' and "login" like '%${searchLoginTerm}%'
+    ORDER BY ${sortBy} ${sortDirection}`,
+      [],
+    );
+    const totalCount = totalUsers.length;
+
+    const users = await this.dataSource.query(
+      `    SELECT account."id", account.login, account.email, account."createdAt", account."passwordHash",
+        account."recoveryCode", email."confirmationCode", email."expirationDate"
+    FROM public."UserAccountData" as account
+    LEFT JOIN "UserEmailData" as email
+    ON account."id" = email."userId"
+    WHERE "email" like '%${searchEmailTerm}%' and "login" like '%${searchLoginTerm}%'
+    ORDER BY ${sortBy} ${sortDirection}
+    LIMIT ${pageSize} OFFSET ${(pageNumber - 1) * pageSize}`,
+      [],
+    );
+
+    const pagesCount = Math.ceil(totalCount / pageSize);
+
+    return {
+      pagesCount,
+      page: pageNumber,
+      pageSize,
+      totalCount,
+      items: users.map((user) => ({
+        id: user.id.toString(),
+        login: user.login,
+        email: user.email,
+        createdAt: user.createdAt,
+      })),
+    };
   }
 
-  async findUserById(userId: ObjectId): Promise<UserViewModel | null> {
-    const foundUser: UserDbType | null = await this.UserModel.findOne({
-      _id: userId,
-    });
-    if (foundUser) {
-      return {
-        email: foundUser.accountData.email,
-        login: foundUser.accountData.login,
-        userId: foundUser._id.toString(),
-      };
+  async findUserById(userId: string): Promise<UserViewModel | null> {
+    if (validateUUID(userId)) {
+      const foundUser = await this.dataSource.query(
+        `SELECT account."id", account.login, account.email, account."createdAt", account."passwordHash",
+        account."recoveryCode", email."confirmationCode", email."expirationDate"
+    FROM public."UserAccountData" as account
+    LEFT JOIN "UserEmailData" as email
+    ON account."id" = email."userId"
+WHERE account."id" = $1`,
+        [userId],
+      );
+      if (foundUser.length > 0) {
+        return {
+          email: foundUser[0].email,
+          login: foundUser[0].login,
+          userId: foundUser[0].id,
+        };
+      } else {
+        return null;
+      }
     } else {
       return null;
     }

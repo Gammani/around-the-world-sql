@@ -22,7 +22,7 @@ export class GetUserByDeviceIdUseCase
       command.deviceId,
     );
     if (userId) {
-      return await this.usersRepository.findUserById(userId);
+      return await this.usersRepository.findUserById(userId.toString());
     } else {
       return null;
     }

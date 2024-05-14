@@ -41,6 +41,12 @@ export class CreateUserUserCase implements ICommandHandler<CreateUserCommand> {
     );
 
     const createdUser = await this.usersRepository.createUser(createUser);
+    // const userMock = {
+    //   inputUserModel: command.inputUserModel,
+    //   passwordHash: passwordHash,
+    //   isConfirmed: false,
+    // };
+    // const createdUser = await this.usersRepository.createUser(userMock);
     try {
       await this.emailManager.sendEmail(
         command.inputUserModel.email,

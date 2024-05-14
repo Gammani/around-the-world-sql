@@ -10,9 +10,13 @@ describe('integration tests for AuthService', () => {
     await mongoose.connect(mongoUri);
   });
 
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
+
   describe('create user', () => {
     it('should return', async () => {
-      expect(5).toBe(5);
+      await expect(5).toBe(5);
     });
   });
 });

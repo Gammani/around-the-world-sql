@@ -27,6 +27,7 @@ import { SecurityDevicesService } from '../../public/devices/application/securit
 import { DeviceRepository } from '../../public/devices/infrastructure/device.repository';
 import { ExpiredTokenRepository } from '../../public/expiredToken/infrastructure/expired.token.repository';
 import { BasicAuthGuard } from '../../public/auth/guards/basic-auth.guard';
+import { GetUserViewModelByUserIdUseCase } from './application/use-cases/getUserViewModelByUserId.useCase';
 
 const useCases = [
   CreateUserUserCase,
@@ -36,6 +37,7 @@ const useCases = [
   GetUserByIdUseCase,
   CreateUserByAdminUseCase,
   DeleteUserByAdminUseCase,
+  GetUserViewModelByUserIdUseCase,
 ];
 
 @Module({

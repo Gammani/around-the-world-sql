@@ -10,7 +10,7 @@ import { PasswordAdapter } from './features/adapter/password.adapter';
 import { JwtMiddleware } from './infrastructure/middleware/jwt.middleware';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './features/public/auth/auth.module';
-import { RemoveAllModule } from './features/super-admin/testing.removeAll/removeAll.module';
+import { RemoveAllModule } from './features/public/testing.removeAll/removeAll.module';
 import { UsersModule } from './features/super-admin/users/users.module';
 import { BlogModule } from './features/public/blogs/blog.module';
 import { PostModule } from './features/public/posts/post.module';

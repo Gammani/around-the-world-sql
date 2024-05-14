@@ -24,3 +24,9 @@ export class UserCreateModel {
   @EmailIsExist()
   email: string;
 }
+
+export type UserCreateModelType = {
+  login: string;
+  password: string;
+  email: string;
+};

@@ -22,7 +22,7 @@ export class UsersService {
     const userId =
       await this.securityDevicesService.findUserIdByDeviceId(deviceId);
     if (userId) {
-      return await this.usersRepository.findUserById(userId);
+      return await this.usersRepository.findUserById(userId.toString());
     } else {
       return null;
     }

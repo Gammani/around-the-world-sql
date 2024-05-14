@@ -23,6 +23,11 @@ export type UserDbType = {
   accountData: AccountDataType;
   emailConfirmation: EmailConfirmationType;
 };
+export type UserSqlDbTYpe = {
+  id: string;
+  login: string;
+  email: string;
+};
 export type DeviceDbType = {
   _id: ObjectId;
   userId: ObjectId;

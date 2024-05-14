@@ -1,13 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserCreateModel } from '../../api/models/input/create-user.input.model';
 import { CreatedUserViewModel } from '../../api/models/output/user.output.model';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  User,
-  UserDocument,
-  UserModelStaticType,
-} from '../../domain/user.entity';
-import { Model } from 'mongoose';
 import { UsersRepository } from '../../infrastructure/users.repository';
 import { PasswordAdapter } from '../../../../adapter/password.adapter';
 
@@ -20,8 +13,6 @@ export class CreateUserByAdminUseCase
   implements ICommandHandler<CreateUserByAdminCommand>
 {
   constructor(
-    @InjectModel(User.name)
-    private UserModel: Model<UserDocument> & UserModelStaticType,
     protected passwordAdapter: PasswordAdapter,
     protected usersRepository: UsersRepository,
   ) {}
@@ -32,12 +23,12 @@ export class CreateUserByAdminUseCase
     const passwordHash = await this.passwordAdapter.createPasswordHash(
       command.inputUserModel.password,
     );
-    const createdUser = this.UserModel.createUser(
-      command.inputUserModel,
-      passwordHash,
-      this.UserModel,
-      true,
-    );
-    return await this.usersRepository.createUser(createdUser);
+    const createdUser = {
+      inputUserModel: command.inputUserModel,
+      passwordHash: passwordHash,
+      isConfirmed: true,
+    };
+
+    return await this.usersRepository.createUserByAdmin(createdUser);
   }
 }
