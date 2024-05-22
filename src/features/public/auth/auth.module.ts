@@ -31,6 +31,7 @@ import { EmailIsExistConstraint } from '../../../infrastructure/decorators/valid
 import { EmailIsConfirmedConstraint } from '../../../infrastructure/decorators/validate/email.isConfirmed.decorator';
 import { IsValidRecoveryCodeConstraint } from '../../../infrastructure/decorators/validate/isValid.recoveryCode.decorator';
 import { IsValidEmailConstraint } from '../../../infrastructure/decorators/validate/email.isValid.decorator';
+import { IsValidPasswordRecoveryCodeConstraint } from '../../../infrastructure/decorators/validate/isValid.passwordRecoveryCode.decorator';
 
 const useCases = [
   ConfirmEmailUseCase,
@@ -38,6 +39,15 @@ const useCases = [
   PasswordRecoveryUseCase,
   PasswordRecoveryUseCase,
   FindAndUpdateDeviceAfterRefreshUseCase,
+];
+const decorators = [
+  LoginIsExistConstraint,
+  EmailCodeIsConfirmConstraint,
+  EmailIsExistConstraint,
+  EmailIsConfirmedConstraint,
+  IsValidRecoveryCodeConstraint,
+  IsValidEmailConstraint,
+  IsValidPasswordRecoveryCodeConstraint,
 ];
 
 @Module({
@@ -63,12 +73,6 @@ const useCases = [
     UsersQueryRepository,
     PasswordAdapter,
     EmailManager,
-    LoginIsExistConstraint,
-    EmailCodeIsConfirmConstraint,
-    EmailIsExistConstraint,
-    EmailIsConfirmedConstraint,
-    IsValidRecoveryCodeConstraint,
-    IsValidEmailConstraint,
     DeviceRepository,
     SecurityDevicesService,
     JwtService,
@@ -76,6 +80,7 @@ const useCases = [
     JwtStrategy,
     EmailManager,
     ExpiredTokenRepository,
+    ...decorators,
     ...useCases,
   ],
 })

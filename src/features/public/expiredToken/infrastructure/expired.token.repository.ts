@@ -7,6 +7,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { PasswordAdapter } from '../../../adapter/password.adapter';
+import { DataSource } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { v1 as uuidv1 } from 'uuid';
 
 @Injectable()
 export class ExpiredTokenRepository {
@@ -14,42 +17,56 @@ export class ExpiredTokenRepository {
     @InjectModel(ExpiredToken.name)
     private ExpiredTokenModel: Model<ExpiredTokenDocument>,
     private passwordAdapter: PasswordAdapter,
+    @InjectDataSource() private dataSource: DataSource,
   ) {}
-  async findToken(RefreshToken: string): Promise<boolean> {
-    const foundToken = await this.ExpiredTokenModel.findOne({
-      refreshToken: RefreshToken,
-    });
-    return !!foundToken;
-  }
+  //   async findToken(RefreshToken: string): Promise<boolean> {
+  //     const foundToken = await this.dataSource.query(
+  //       `SELECT id, "deviceId", "userId", "refreshToken"
+  // FROM public."ExpiredToken"
+  // WHERE "refreshToken" = $1`,
+  //       [RefreshToken],
+  //     );
+  //     if (foundToken.length > 0) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   }
   async isExpiredToken(refreshToken: string): Promise<boolean> {
     try {
-      const result: any =
-        await this.passwordAdapter.jwtRefreshTokenVerify(refreshToken);
+      await this.passwordAdapter.jwtRefreshTokenVerify(refreshToken);
       return false;
     } catch (error: any) {
       console.log(error.message);
       return true;
     }
   }
-  async addExpiredRefreshToken(
-    deviceId: ObjectId,
-    userId: ObjectId,
-    refreshToken: string,
-  ) {
-    debugger;
-    const newExpiredRefreshToken = {
-      _id: new ObjectId(),
-      deviceId,
-      userId,
-      refreshToken,
-    };
-    const expiredTokenInstance = new this.ExpiredTokenModel(
-      newExpiredRefreshToken,
-    );
-
-    await expiredTokenInstance.save();
-    return;
-  }
+  //   async addExpiredRefreshToken(
+  //     deviceId: ObjectId | string,
+  //     userId: ObjectId | string,
+  //     refreshToken: string,
+  //   ) {
+  //     debugger;
+  //     const newExpiredRefreshToken = {
+  //       id: uuidv1(),
+  //       deviceId,
+  //       userId,
+  //       refreshToken,
+  //     };
+  //
+  //     await this.dataSource.query(
+  //       `INSERT INTO public."ExpiredToken"(
+  // id, "deviceId", "userId", "refreshToken")
+  // VALUES ($1, $2, $3, $4);`,
+  //       [
+  //         newExpiredRefreshToken.id,
+  //         newExpiredRefreshToken.deviceId,
+  //         newExpiredRefreshToken.userId,
+  //         newExpiredRefreshToken.refreshToken,
+  //       ],
+  //     );
+  //     return;
+  //   }
 
   async deleteAll() {
     await this.ExpiredTokenModel.deleteMany({});

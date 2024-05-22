@@ -9,7 +9,7 @@ export class GetQueryPostsCommand {
     public pageSize: string | undefined,
     public sortBy: string | undefined,
     public sortDirection: string | undefined,
-    public userId?: ObjectId | null | undefined,
+    public userId?: ObjectId | string | null | undefined,
     public blogId?: string,
   ) {}
 }

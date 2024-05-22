@@ -15,14 +15,14 @@ export class AuthInputModel {
 }
 
 export interface RequestWithUser extends Request {
-  user: ObjectId; // предположим, что user имеет тип ObjectId
+  user: ObjectId | string; // предположим, что user имеет тип ObjectId
 }
 
 export interface RequestWithDeviceId extends Request {
-  deviceId: ObjectId;
+  deviceId: ObjectId | string;
   cookies?: string;
 }
 
 export interface RequestWithUserId extends Request {
-  user?: { userId: ObjectId | null | undefined };
+  user?: { userId: ObjectId | string | null | undefined };
 }

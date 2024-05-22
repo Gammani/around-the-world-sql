@@ -8,7 +8,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../../../features/super-admin/users/application/users.service';
 
-export function IsValidRecoveryCode(
+export function IsValidPasswordRecoveryCode(
   property?: string,
   validationOptions?: ValidationOptions,
 ) {
@@ -18,14 +18,14 @@ export function IsValidRecoveryCode(
       propertyName: propertyName,
       options: validationOptions,
       constraints: [property],
-      validator: IsValidRecoveryCodeConstraint,
+      validator: IsValidPasswordRecoveryCodeConstraint,
     });
   };
 }
 
-@ValidatorConstraint({ name: 'IsValidRecoveryCode', async: false })
+@ValidatorConstraint({ name: 'IsValidPasswordRecoveryCode', async: false })
 @Injectable()
-export class IsValidRecoveryCodeConstraint
+export class IsValidPasswordRecoveryCodeConstraint
   implements ValidatorConstraintInterface
 {
   constructor(private readonly userService: UsersService) {}

@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import { DeviceRepository } from '../../infrastructure/device.repository';
 
 export class FindAndUpdateDeviceAfterRefreshCommand {
-  constructor(public deviceId: ObjectId) {}
+  constructor(public deviceId: ObjectId | string) {}
 }
 
 @CommandHandler(FindAndUpdateDeviceAfterRefreshCommand)

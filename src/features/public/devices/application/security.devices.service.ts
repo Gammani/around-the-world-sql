@@ -16,7 +16,9 @@ export class SecurityDevicesService {
     @InjectModel(Device.name)
     private DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
   ) {}
-  async findUserIdByDeviceId(deviceId: ObjectId): Promise<ObjectId | null> {
+  async findUserIdByDeviceId(
+    deviceId: ObjectId | string,
+  ): Promise<ObjectId | string | null> {
     return this.devicesRepository.findUserIdByDeviceId(deviceId);
   }
   async deleteAllSessionExcludeCurrent(deviceId: ObjectId) {

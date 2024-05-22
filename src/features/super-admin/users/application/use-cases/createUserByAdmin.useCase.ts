@@ -29,6 +29,6 @@ export class CreateUserByAdminUseCase
       isConfirmed: true,
     };
 
-    return await this.usersRepository.createUserByAdmin(createdUser);
+    return await this.usersRepository.createUser(createdUser);
   }
 }

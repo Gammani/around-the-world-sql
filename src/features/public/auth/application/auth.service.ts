@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ObjectId } from 'mongodb';
 import { UsersRepository } from '../../../super-admin/users/infrastructure/users.repository';
 import { UsersService } from '../../../super-admin/users/application/users.service';
-import { UserDbType } from '../../../types';
+import { UserDbViewModelType, UserViewEmailDbType } from '../../../types';
 
 @Injectable()
 export class AuthService {
@@ -10,26 +9,23 @@ export class AuthService {
     protected usersRepository: UsersRepository,
     protected userService: UsersService,
   ) {}
-  async isConfirmEmailCode(code: string): Promise<boolean> {
+  async isConfirmEmailCode(confirmationCode: string): Promise<boolean> {
     debugger;
-    const foundUser: UserDbType | null =
-      await this.usersRepository.findUserByConfirmationCode(code);
+    const foundUser: UserViewEmailDbType | null =
+      await this.usersRepository.findUserByConfirmationCode(confirmationCode);
     if (!foundUser) return false;
-    if (foundUser.emailConfirmation.isConfirmed) return false;
-    if (foundUser.emailConfirmation.confirmationCode !== code) return false;
-    return new Date(foundUser.emailConfirmation.expirationDate) >= new Date();
+    if (foundUser.isConfirmed) return false;
+    if (foundUser.confirmationCode !== confirmationCode) return false;
+    return new Date(foundUser.expirationDate) >= new Date();
   }
   async validateUser(
     loginOrEmail: string,
     pass: string,
-  ): Promise<ObjectId | null> {
-    debugger;
-    const user: UserDbType | null = await this.userService.checkCredentials(
-      loginOrEmail,
-      pass,
-    );
+  ): Promise<string | null> {
+    const user: UserDbViewModelType | null =
+      await this.userService.checkCredentials(loginOrEmail, pass);
     if (user) {
-      return user._id;
+      return user.id;
     } else {
       return null;
     }

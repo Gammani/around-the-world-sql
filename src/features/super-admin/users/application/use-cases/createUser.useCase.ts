@@ -1,11 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  User,
-  UserDocument,
-  UserModelStaticType,
-} from '../../domain/user.entity';
-import { Model } from 'mongoose';
 import { UsersRepository } from '../../infrastructure/users.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { UserCreateModel } from '../../api/models/input/create-user.input.model';
@@ -20,8 +13,6 @@ export class CreateUserCommand {
 @CommandHandler(CreateUserCommand)
 export class CreateUserUserCase implements ICommandHandler<CreateUserCommand> {
   constructor(
-    @InjectModel(User.name)
-    private UserModel: Model<UserDocument> & UserModelStaticType,
     private usersRepository: UsersRepository,
     private passwordAdapter: PasswordAdapter,
     private emailManager: EmailManager,
@@ -32,13 +23,12 @@ export class CreateUserUserCase implements ICommandHandler<CreateUserCommand> {
       command.inputUserModel.password,
     );
     const confirmationCode = uuidv4();
-    const createUser = this.UserModel.createUser(
-      command.inputUserModel,
-      passwordHash,
-      this.UserModel,
-      false,
-      confirmationCode,
-    );
+    const createUser = {
+      inputUserModel: command.inputUserModel,
+      passwordHash: passwordHash,
+      isConfirmed: false,
+      confirmationCode: confirmationCode,
+    };
 
     const createdUser = await this.usersRepository.createUser(createUser);
     // const userMock = {
@@ -58,7 +48,7 @@ export class CreateUserUserCase implements ICommandHandler<CreateUserCommand> {
       );
     } catch (error) {
       console.log(error);
-      await this.usersRepository.deleteUser(createdUser.id);
+      // await this.usersRepository.deleteUser(createdUser.id);
       throw new ServiceUnavailableException();
     }
     return createdUser;

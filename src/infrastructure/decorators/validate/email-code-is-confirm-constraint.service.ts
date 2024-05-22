@@ -29,9 +29,9 @@ export class EmailCodeIsConfirmConstraint
   implements ValidatorConstraintInterface
 {
   constructor(private readonly authService: AuthService) {}
-  async validate(code: string) {
+  async validate(confirmationCode: string) {
     debugger;
-    return await this.authService.isConfirmEmailCode(code);
+    return await this.authService.isConfirmEmailCode(confirmationCode);
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {

@@ -10,7 +10,7 @@ export class GetQueryCommentsByPostIdCommand {
     public sortBy: string | undefined,
     public sortDirection: string | undefined,
     public postId: string,
-    public userId?: ObjectId | null | undefined,
+    public userId?: ObjectId | string | null | undefined,
   ) {}
 }
 

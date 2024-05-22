@@ -23,7 +23,34 @@ export type UserDbType = {
   accountData: AccountDataType;
   emailConfirmation: EmailConfirmationType;
 };
-export type UserSqlDbTYpe = {
+export type UserDbViewModelType = {
+  id: string;
+  accountData: AccountDataType;
+  emailConfirmation: EmailConfirmationType;
+};
+export type UserEmailDataSqlType = {
+  id: string;
+  confirmationCode: string;
+  expirationDate: string;
+  isConfirmed: boolean;
+  userId: string;
+};
+export type UserAccountDataSqlType = {
+  id: string;
+  login: string;
+  email: string;
+  createdAt: string;
+  passwordHash: string;
+  recoveryCode: string;
+  expirationDatePasswordRecovery: Date;
+};
+export type UserViewEmailDbType = {
+  userId: string;
+  confirmationCode: string;
+  expirationDate: string;
+  isConfirmed: boolean;
+};
+export type UserSqlDbType = {
   id: string;
   login: string;
   email: string;
@@ -31,6 +58,20 @@ export type UserSqlDbTYpe = {
 export type DeviceDbType = {
   _id: ObjectId;
   userId: ObjectId;
+  ip: string;
+  deviceName: string;
+  lastActiveDate: string;
+};
+export type DeviceSqlDbType = {
+  id: string;
+  userId: string;
+  ip: string;
+  deviceName: string;
+  lastActiveDate: string;
+};
+export type DeviceDbViewModelType = {
+  id: string;
+  userId: string;
   ip: string;
   deviceName: string;
   lastActiveDate: string;
@@ -110,4 +151,16 @@ export type CommentLikeDbType = {
   likeStatus: LikeStatus;
   addedAt: string;
   lastUpdate: string;
+};
+export type CreatedDeviceDtoModelType = {
+  userId: string;
+  ip: string;
+  deviceName: string;
+};
+export type DeviceDtoModelType = {
+  id: string;
+  userId: string;
+  ip: string;
+  deviceName: string;
+  lastActiveDate: string;
 };

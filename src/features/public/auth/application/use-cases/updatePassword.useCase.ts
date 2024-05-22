@@ -23,7 +23,7 @@ export class UpdatePasswordUseCase
 
     return this.usersRepository.updatePassword(
       passwordHash,
-      command.newPasswordModel.recoveryCode,
+      command.newPasswordModel.passwordRecoveryCode,
     );
   }
 }

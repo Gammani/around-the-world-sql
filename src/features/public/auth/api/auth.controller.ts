@@ -31,7 +31,7 @@ import { UpdatePasswordCommand } from '../application/use-cases/updatePassword.u
 import { EmailPasswordRecoveryInputModel } from './models/input/email.passwordRecovery.input.model';
 import { PasswordRecoveryCommand } from '../application/use-cases/passwordRecovery.useCase';
 import { AddDeviceCommand } from '../../devices/application/use-cases/addDevice.useCase';
-import { AddExpiredRefreshTokenCommand } from '../../expiredToken/application/use-cases/addExpiredRefreshToken.useCase';
+// import { AddExpiredRefreshTokenCommand } from '../../expiredToken/application/use-cases/addExpiredRefreshToken.useCase';
 import { DeleteCurrentSessionByIdCommand } from '../../devices/application/use-cases/deleteCurrentSessionById.useCase';
 import { CheckRefreshToken } from '../guards/jwt-refreshToken.guard';
 import { CheckAccessToken } from '../guards/jwt-accessToken.guard';
@@ -94,12 +94,11 @@ export class AuthController {
     const device = await this.commandBus.execute(
       new AddDeviceCommand(req.user, ip, deviceName),
     );
-    debugger;
-    const accessToken = await this.jwtService.createAccessJWT(device._id);
-    const refreshToken = await this.jwtService.createRefreshJWT(device._id);
+    const accessToken = await this.jwtService.createAccessJWT(device.id);
+    const refreshToken = await this.jwtService.createRefreshJWT(device.id);
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: true,
+      httpOnly: false,
+      secure: false,
     });
     return { accessToken: accessToken };
   }
@@ -111,9 +110,9 @@ export class AuthController {
     @Req() req: Request & RequestWithDeviceId,
     @Res({ passthrough: true }) res: Response,
   ) {
-    await this.commandBus.execute(
-      new AddExpiredRefreshTokenCommand(req.deviceId, req.cookies.refreshToken),
-    );
+    // await this.commandBus.execute(
+    //   new AddExpiredRefreshTokenCommand(req.deviceId, req.cookies.refreshToken),
+    // );
 
     const accessToken = await this.jwtService.createAccessJWT(req.deviceId);
     const refreshToken = await this.jwtService.createRefreshJWT(req.deviceId);
@@ -121,8 +120,8 @@ export class AuthController {
       new FindAndUpdateDeviceAfterRefreshCommand(req.deviceId),
     );
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: true,
+      httpOnly: false,
+      secure: false,
     });
     return { accessToken: accessToken };
   }
@@ -140,9 +139,9 @@ export class AuthController {
     @Req() req: Request & RequestWithDeviceId,
     // @Res({ passthrough: true }) res: Response,
   ) {
-    await this.commandBus.execute(
-      new AddExpiredRefreshTokenCommand(req.deviceId, req.cookies.refreshToken),
-    );
+    // await this.commandBus.execute(
+    //   new AddExpiredRefreshTokenCommand(req.deviceId, req.cookies.refreshToken),
+    // );
     await this.commandBus.execute(
       new DeleteCurrentSessionByIdCommand(req.deviceId.toString()),
     );

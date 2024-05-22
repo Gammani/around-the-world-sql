@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { EmailPasswordRecoveryInputModel } from '../../api/models/input/email.passwordRecovery.input.model';
 import { EmailManager } from '../../../../adapter/email.manager';
 import { UsersRepository } from '../../../../super-admin/users/infrastructure/users.repository';
+import { UserDbViewModelType } from '../../../../types';
+import { add } from 'date-fns/add';
 
 export class PasswordRecoveryCommand {
   constructor(
@@ -20,14 +22,22 @@ export class PasswordRecoveryUseCase
   ) {}
 
   async execute(command: PasswordRecoveryCommand) {
-    const foundUser = await this.usersRepository.findUserByLoginOrEmail(
-      command.emailPasswordRecoveryInputModel.email,
-    );
+    const foundUser: UserDbViewModelType | null =
+      await this.usersRepository.findUserByLoginOrEmail(
+        command.emailPasswordRecoveryInputModel.email,
+      );
+    // console.log(foundUser);
     if (foundUser) {
       const recoveryCode = uuidv4();
-      await this.usersRepository.updateRecoveryCode(
+      const expirationDatePasswordRecovery = add(new Date(), {
+        hours: 1,
+        minutes: 3,
+      });
+      // const expirationDatePasswordRecovery = new Date();
+      await this.usersRepository.updatePasswordRecoveryCode(
         command.emailPasswordRecoveryInputModel.email,
         recoveryCode,
+        expirationDatePasswordRecovery,
       );
       await this.emailManager.sendEmail(
         command.emailPasswordRecoveryInputModel.email,

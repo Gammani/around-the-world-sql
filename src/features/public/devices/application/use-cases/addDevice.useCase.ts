@@ -4,10 +4,11 @@ import { DeviceRepository } from '../../infrastructure/device.repository';
 import { Model } from 'mongoose';
 import { Device, DeviceDocument } from '../../domain/devices.entity';
 import { InjectModel } from '@nestjs/mongoose';
+import { DeviceDtoModelType } from '../../../../types';
 
 export class AddDeviceCommand {
   constructor(
-    public userId: ObjectId,
+    public userId: ObjectId | string,
     public ip: string,
     public deviceName: string,
   ) {}
@@ -22,17 +23,18 @@ export class AddDeviceUseCase implements ICommandHandler<AddDeviceCommand> {
 
   async execute(command: AddDeviceCommand) {
     const createdDeviceDtoModel = {
-      userId: command.userId,
+      userId: command.userId.toString(),
       ip: command.ip,
       deviceName: command.deviceName,
     };
-    const device = new this.DeviceModel(createdDeviceDtoModel);
-    device._id = new ObjectId();
-    device.lastActiveDate = new Date().toISOString();
+    // const device = new this.DeviceModel(createdDeviceDtoModel);
+    // device._id = new ObjectId();
+    // device.lastActiveDate = new Date().toISOString();
 
-    const createdDevice = await this.devicesRepository.createDevice(device);
+    const createdDevice: DeviceDtoModelType =
+      await this.devicesRepository.createDevice(createdDeviceDtoModel);
     return {
-      _id: createdDevice._id,
+      id: createdDevice.id,
       userId: createdDevice.userId,
       ip: createdDevice.ip,
       deviceName: createdDevice.deviceName,

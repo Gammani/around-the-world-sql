@@ -11,21 +11,21 @@ export class JwtService {
     private passwordAdapter: PasswordAdapter,
   ) {}
 
-  async createAccessJWT(deviceId: ObjectId) {
+  async createAccessJWT(deviceId: ObjectId | string) {
     return jwt.sign(
       { deviceId },
       this.configService.get('JWT_ACCESS_SECRET') as Secret,
       {
-        expiresIn: 10,
+        expiresIn: 10000,
       },
     );
   }
-  async createRefreshJWT(deviceId: ObjectId) {
+  async createRefreshJWT(deviceId: ObjectId | string) {
     return jwt.sign(
       { deviceId },
       this.configService.get('JWT_REFRESH_SECRET') as Secret,
       {
-        expiresIn: 20,
+        expiresIn: 20000,
       },
     );
   }

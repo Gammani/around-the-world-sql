@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 import { Trim } from '../../../../../../infrastructure/decorators/transform/trim';
-import { IsValidRecoveryCode } from '../../../../../../infrastructure/decorators/validate/isValid.recoveryCode.decorator';
+import { IsValidPasswordRecoveryCode } from '../../../../../../infrastructure/decorators/validate/isValid.passwordRecoveryCode.decorator';
 
 export class NewPasswordModel {
   @Trim()
@@ -12,6 +12,6 @@ export class NewPasswordModel {
   @Trim()
   @IsString()
   @IsNotEmpty()
-  @IsValidRecoveryCode()
-  recoveryCode: string;
+  @IsValidPasswordRecoveryCode()
+  passwordRecoveryCode: string;
 }

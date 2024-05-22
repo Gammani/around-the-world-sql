@@ -28,7 +28,7 @@ export function IsValidEmail(
 export class IsValidEmailConstraint implements ValidatorConstraintInterface {
   constructor(private readonly userService: UsersService) {}
   async validate(email: string) {
-    return this.userService.emailIsValid(email);
+    return await this.userService.emailIsValid(email);
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {

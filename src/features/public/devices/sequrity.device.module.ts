@@ -16,7 +16,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { DeleteCurrentSessionUseCase } from './application/use-cases/deleteCurrentSessionById.useCase';
 import { FoundDeviceFromUserUseCase } from './application/use-cases/foundDeviceFromUserUseCase';
 import { GetDeviceByDeviceIdUseCase } from './application/use-cases/getDeviceByDeviceId.useCase';
-import { AddExpiredRefreshTokenUseCase } from '../expiredToken/application/use-cases/addExpiredRefreshToken.useCase';
+// import { AddExpiredRefreshTokenUseCase } from '../expiredToken/application/use-cases/addExpiredRefreshToken.useCase';
 import { DeleteAllSessionExcludeCurrentUseCase } from './application/use-cases/deleteAllSessionExcludeCurrent.useCase';
 import { GetUserByDeviceIdUseCase } from '../../super-admin/users/application/use-cases/getUserByDeviceId.useCase';
 import { User, UserSchema } from '../../super-admin/users/domain/user.entity';
@@ -32,7 +32,7 @@ const useCases = [
   FoundDeviceFromUserUseCase,
   GetUserByDeviceIdUseCase,
   GetDeviceByDeviceIdUseCase,
-  AddExpiredRefreshTokenUseCase,
+  // AddExpiredRefreshTokenUseCase,
   DeleteAllSessionExcludeCurrentUseCase,
 ];
 

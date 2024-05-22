@@ -5,7 +5,7 @@ import { SecurityDevicesService } from '../../../../public/devices/application/s
 import { UserDbType } from '../../../../types';
 
 export class GetUserByDeviceIdCommand {
-  constructor(public deviceId: ObjectId) {}
+  constructor(public deviceId: ObjectId | string) {}
 }
 
 @CommandHandler(GetUserByDeviceIdCommand)

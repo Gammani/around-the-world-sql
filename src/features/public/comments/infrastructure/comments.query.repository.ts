@@ -23,7 +23,7 @@ export class CommentsQueryRepository {
 
   async findCommentById(
     id: string,
-    userId?: ObjectId,
+    userId?: ObjectId | string,
   ): Promise<CommentViewModel | null> {
     const foundComment: CommentDbType | null = await this.CommentModel.findOne({
       _id: id,
@@ -66,7 +66,7 @@ export class CommentsQueryRepository {
     sortByQuery: string | undefined,
     sortDirectionQuery: string | undefined,
     postId: string,
-    userId?: ObjectId | null | undefined,
+    userId?: ObjectId | string | null | undefined,
   ): Promise<CommentsWithPaginationViewModel> {
     const pageNumber = isNaN(Number(pageNumberQuery))
       ? 1
@@ -116,7 +116,7 @@ export class CommentsQueryRepository {
 
   async getLikeInfo(
     comment: CommentDocument,
-    userId?: ObjectId | null | undefined,
+    userId?: ObjectId | string | null | undefined,
   ) {
     let myStatus: CommentLikeDocument | null = null;
 

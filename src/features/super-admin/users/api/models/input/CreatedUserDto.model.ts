@@ -4,4 +4,5 @@ export type CreatedUserDtoModel = {
   inputUserModel: UserCreateModelType;
   passwordHash: string;
   isConfirmed: boolean;
+  confirmationCode?: string;
 };

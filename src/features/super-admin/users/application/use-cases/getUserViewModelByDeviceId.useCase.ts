@@ -4,7 +4,7 @@ import { SecurityDevicesService } from '../../../../public/devices/application/s
 import { UsersQueryRepository } from '../../infrastructure/users.query.repository';
 
 export class GetUserViewModelByDeviceIdCommand {
-  constructor(public deviceId: ObjectId) {}
+  constructor(public deviceId: ObjectId | string) {}
 }
 
 @CommandHandler(GetUserViewModelByDeviceIdCommand)

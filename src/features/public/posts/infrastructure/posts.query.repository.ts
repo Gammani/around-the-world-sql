@@ -26,7 +26,7 @@ export class PostsQueryRepository {
     pageSizeQuery: string | undefined,
     sortByQuery: string | undefined,
     sortDirectionQuery: string | undefined,
-    userId?: ObjectId | null | undefined,
+    userId?: ObjectId | string | null | undefined,
     blogId?: string,
   ): Promise<PostsWithPaginationViewModel> {
     const pageNumber = isNaN(Number(pageNumberQuery))
@@ -95,7 +95,7 @@ export class PostsQueryRepository {
 
   async getExtendedLikesInfo(
     post: PostDocument,
-    userId?: ObjectId | null | undefined,
+    userId?: ObjectId | string | null | undefined,
   ): Promise<customFilteredPostLikesType | undefined> {
     try {
       let myStatus: PostLikeDocument | null = null;
@@ -156,7 +156,7 @@ export class PostsQueryRepository {
 
   async findPostById(
     postId: string,
-    userId?: ObjectId | null | undefined,
+    userId?: ObjectId | string | null | undefined,
   ): Promise<PostViewModel | null> {
     if (!ObjectId.isValid(postId)) {
       throw new NotFoundException();

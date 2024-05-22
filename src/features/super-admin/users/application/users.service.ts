@@ -6,7 +6,7 @@ import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { PasswordAdapter } from '../../../adapter/password.adapter';
 import { SecurityDevicesService } from '../../../public/devices/application/security.devices.service';
-import { UserDbType } from '../../../types';
+import { UserDbType, UserDbViewModelType } from '../../../types';
 
 @Injectable()
 export class UsersService {
@@ -18,7 +18,9 @@ export class UsersService {
     private UserModel: Model<UserDocument> & UserModelStaticType,
   ) {}
 
-  async findUserByDeviceId(deviceId: ObjectId): Promise<UserDbType | null> {
+  async findUserByDeviceId(
+    deviceId: ObjectId | string,
+  ): Promise<UserDbType | null> {
     const userId =
       await this.securityDevicesService.findUserIdByDeviceId(deviceId);
     if (userId) {
@@ -27,10 +29,15 @@ export class UsersService {
       return null;
     }
   }
-  async findUserByRecoveryCode(
-    recoveryCode: string,
-  ): Promise<UserDbType | null> {
+  async findUserByRecoveryCode(recoveryCode: string): Promise<boolean> {
     return await this.usersRepository.findUserByRecoveryCode(recoveryCode);
+  }
+  async findUserByPasswordRecoveryCode(
+    passwordRecoveryCode: string,
+  ): Promise<boolean> {
+    return await this.usersRepository.findUserByPasswordRecoveryCode(
+      passwordRecoveryCode,
+    );
   }
   async loginIsExist(login: string): Promise<boolean> {
     return await this.usersRepository.loginIsExist(login);
@@ -38,8 +45,8 @@ export class UsersService {
   async checkCredentials(
     loginOrEmail: string,
     password: string,
-  ): Promise<UserDbType | null> {
-    const user: UserDbType | null =
+  ): Promise<UserDbViewModelType | null> {
+    const user: UserDbViewModelType | null =
       await this.usersRepository.findUserByLoginOrEmail(loginOrEmail);
 
     if (!user) return null;

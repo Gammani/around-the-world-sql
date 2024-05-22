@@ -5,7 +5,7 @@ import { ObjectId } from 'mongodb';
 export class GetQueryPostByIdCommand {
   constructor(
     public postId: string,
-    public userId?: ObjectId | null | undefined,
+    public userId?: ObjectId | string | null | undefined,
   ) {}
 }
 
