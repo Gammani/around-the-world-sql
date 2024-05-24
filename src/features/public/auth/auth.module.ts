@@ -32,6 +32,7 @@ import { EmailIsConfirmedConstraint } from '../../../infrastructure/decorators/v
 import { IsValidRecoveryCodeConstraint } from '../../../infrastructure/decorators/validate/isValid.recoveryCode.decorator';
 import { IsValidEmailConstraint } from '../../../infrastructure/decorators/validate/email.isValid.decorator';
 import { IsValidPasswordRecoveryCodeConstraint } from '../../../infrastructure/decorators/validate/isValid.passwordRecoveryCode.decorator';
+import { RegistrationResendCodeUseCase } from './application/use-cases/registrationResendCode.useCase';
 
 const useCases = [
   ConfirmEmailUseCase,
@@ -39,6 +40,7 @@ const useCases = [
   PasswordRecoveryUseCase,
   PasswordRecoveryUseCase,
   FindAndUpdateDeviceAfterRefreshUseCase,
+  RegistrationResendCodeUseCase,
 ];
 const decorators = [
   LoginIsExistConstraint,

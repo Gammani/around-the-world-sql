@@ -6,7 +6,7 @@ import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { PasswordAdapter } from '../../../adapter/password.adapter';
 import { SecurityDevicesService } from '../../../public/devices/application/security.devices.service';
-import { UserDbType, UserDbViewModelType } from '../../../types';
+import { UserDbViewModelType } from '../../../types';
 
 @Injectable()
 export class UsersService {
@@ -20,7 +20,7 @@ export class UsersService {
 
   async findUserByDeviceId(
     deviceId: ObjectId | string,
-  ): Promise<UserDbType | null> {
+  ): Promise<UserDbViewModelType | null> {
     const userId =
       await this.securityDevicesService.findUserIdByDeviceId(deviceId);
     if (userId) {

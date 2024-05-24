@@ -3,7 +3,10 @@ import { ObjectId } from 'mongodb';
 import { DeviceRepository } from '../../infrastructure/device.repository';
 
 export class DeleteAllSessionExcludeCurrentCommand {
-  constructor(public deviceId: ObjectId | string) {}
+  constructor(
+    public deviceId: ObjectId | string,
+    public userId: string,
+  ) {}
 }
 
 @CommandHandler(DeleteAllSessionExcludeCurrentCommand)
@@ -15,6 +18,7 @@ export class DeleteAllSessionExcludeCurrentUseCase
   async execute(command: DeleteAllSessionExcludeCurrentCommand) {
     return await this.devicesRepository.deleteAllSessionExcludeCurrent(
       command.deviceId,
+      command.userId,
     );
   }
 }

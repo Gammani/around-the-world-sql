@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { ObjectId } from 'mongodb';
-import { SecurityDevicesService } from '../../../../public/devices/application/security.devices.service';
 import { UsersQueryRepository } from '../../infrastructure/users.query.repository';
+import { DeviceRepository } from '../../../../public/devices/infrastructure/device.repository';
 
 export class GetUserViewModelByDeviceIdCommand {
   constructor(public deviceId: ObjectId | string) {}
@@ -10,12 +10,12 @@ export class GetUserViewModelByDeviceIdCommand {
 @CommandHandler(GetUserViewModelByDeviceIdCommand)
 export class GetUserViewModelByDeviceIdUseCase {
   constructor(
-    private securityDevicesService: SecurityDevicesService,
+    private devicesRepository: DeviceRepository,
     private usersQueryRepository: UsersQueryRepository,
   ) {}
 
   async execute(command: GetUserViewModelByDeviceIdCommand) {
-    const userId = await this.securityDevicesService.findUserIdByDeviceId(
+    const userId = await this.devicesRepository.findUserIdByDeviceId(
       command.deviceId,
     );
     if (userId) {

@@ -18,11 +18,7 @@ export class SecurityDevicesService {
   ) {}
   async findUserIdByDeviceId(
     deviceId: ObjectId | string,
-  ): Promise<ObjectId | string | null> {
+  ): Promise<string | null> {
     return this.devicesRepository.findUserIdByDeviceId(deviceId);
-  }
-  async deleteAllSessionExcludeCurrent(deviceId: ObjectId) {
-    await this.devicesRepository.deleteAllSessionExcludeCurrent(deviceId);
-    return;
   }
 }

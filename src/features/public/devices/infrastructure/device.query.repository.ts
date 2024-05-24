@@ -8,24 +8,31 @@ import {
 } from '../domain/devices.entity';
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
-import { DeviceDbType } from '../../../types';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class DeviceQueryRepository {
   constructor(
     @InjectModel(Device.name)
     private DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
+    @InjectDataSource() private dataSource: DataSource,
   ) {}
 
   async findAllActiveSessionFromUserId(
-    userId: ObjectId,
+    userId: ObjectId | string,
   ): Promise<DeviceViewModel[] | undefined> {
-    const result = await this.DeviceModel.find({ userId: userId });
-    return result.map((i: DeviceDbType) => ({
+    const result = await this.dataSource.query(
+      `SELECT id, ip, "deviceName", "lastActiveDate", "userId"
+FROM public."Device"
+WHERE "Device"."userId" = $1`,
+      [userId],
+    );
+    return result.map((i) => ({
       ip: i.ip,
       title: i.deviceName,
       lastActiveDate: i.lastActiveDate,
-      deviceId: i._id.toString(),
+      deviceId: i.id,
     }));
   }
 }

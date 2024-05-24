@@ -3,7 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { EmailInputModel } from '../../api/models/input/email.input.model';
 import { UsersRepository } from '../../../../super-admin/users/infrastructure/users.repository';
 import { EmailManager } from '../../../../adapter/email.manager';
-import { UserDbType } from '../../../../types';
+import { UserDbViewModelType } from '../../../../types';
+import { add } from 'date-fns/add';
 
 export class RegistrationResendCodeCommand {
   constructor(public emailInputModel: EmailInputModel) {}
@@ -19,13 +20,20 @@ export class RegistrationResendCodeUseCase
   ) {}
 
   async execute(command: RegistrationResendCodeCommand) {
-    const foundUser: UserDbType | null =
-      await this.usersRepository.findUserByEmail(command.emailInputModel.email);
+    const foundUser: UserDbViewModelType | null =
+      await this.usersRepository.findUserByLoginOrEmail(
+        command.emailInputModel.email,
+      );
     if (foundUser && !foundUser.emailConfirmation.isConfirmed) {
       const code = uuidv4();
+      const expirationDate = add(new Date(), {
+        hours: 1,
+        minutes: 3,
+      });
       await this.usersRepository.updateConfirmationCode(
-        command.emailInputModel.email,
+        foundUser.id,
         code,
+        expirationDate,
       );
       try {
         await this.emailManager.sendEmail(

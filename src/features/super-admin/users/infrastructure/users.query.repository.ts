@@ -31,6 +31,7 @@ export class UsersQueryRepository {
       ? 1
       : Number(pageNumberQuery);
     const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery);
+    const offset = (pageNumber - 1) * pageSize;
     const sortBy = sortByQuery ? `${sortByQuery}` : 'account."createdAt"';
 
     const sortDirection = sortDirectionQuery === 'asc' ? 'asc' : 'desc';
@@ -41,22 +42,21 @@ export class UsersQueryRepository {
     FROM public."UserAccountData" as account
     LEFT JOIN "UserEmailData" as email
     ON account."id" = email."userId"
-    WHERE "email" like '%${searchEmailTerm}%' and "login" like '%${searchLoginTerm}%'
-    ORDER BY ${sortBy} ${sortDirection}`,
+    WHERE LOWER(email) ILIKE '%${searchEmailTerm}%' OR LOWER(login) ILIKE '%${searchLoginTerm}%'`,
       [],
     );
     const totalCount = totalUsers.length;
 
     const users = await this.dataSource.query(
       `    SELECT account."id", account.login, account.email, account."createdAt", account."passwordHash",
-        account."recoveryCode", email."confirmationCode", email."expirationDate"
-    FROM public."UserAccountData" as account
-    LEFT JOIN "UserEmailData" as email
-    ON account."id" = email."userId"
-    WHERE "email" like '%${searchEmailTerm}%' and "login" like '%${searchLoginTerm}%'
-    ORDER BY ${sortBy} ${sortDirection}
-    LIMIT ${pageSize} OFFSET ${(pageNumber - 1) * pageSize}`,
-      [],
+    account."recoveryCode", email."confirmationCode", email."expirationDate"
+  FROM public."UserAccountData" as account
+  LEFT JOIN "UserEmailData" as email
+  ON account."id" = email."userId"
+  WHERE LOWER(email) ILIKE '%${searchEmailTerm}%' OR LOWER(login) ILIKE '%${searchLoginTerm}%'
+  ORDER BY ${sortBy} ${sortDirection}
+  LIMIT $1 OFFSET $2`,
+      [pageSize, offset],
     );
 
     const pagesCount = Math.ceil(totalCount / pageSize);

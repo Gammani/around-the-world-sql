@@ -16,12 +16,12 @@ import { RequestWithDeviceId } from '../../auth/api/models/input/auth.input.mode
 import { DeleteCurrentSessionByIdCommand } from '../application/use-cases/deleteCurrentSessionById.useCase';
 import { CommandBus } from '@nestjs/cqrs';
 import { CheckRefreshToken } from '../../auth/guards/jwt-refreshToken.guard';
-import { ObjectId } from 'mongodb';
 import { GetDeviceByDeviceIdCommand } from '../application/use-cases/getDeviceByDeviceId.useCase';
 import { DeleteAllSessionExcludeCurrentCommand } from '../application/use-cases/deleteAllSessionExcludeCurrent.useCase';
 import { UsersService } from '../../../super-admin/users/application/users.service';
-import { UserDbType } from '../../../types';
+import { UserDbViewModelType } from '../../../types';
 import { GetUserByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserByDeviceId.useCase';
+import { GetUserIdByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserIdByDeviceId.useCase';
 
 @UseGuards(CheckRefreshToken)
 @Controller('security/devices')
@@ -35,11 +35,11 @@ export class SecurityDeviceController {
 
   @Get()
   async getAllDevicesFromUser(@Req() req: Request & RequestWithDeviceId) {
-    const foundUser: UserDbType | null =
+    const foundUser: UserDbViewModelType | null =
       await this.userService.findUserByDeviceId(req.deviceId);
     if (foundUser)
       return await this.deviceQueryRepository.findAllActiveSessionFromUserId(
-        foundUser._id,
+        foundUser.id,
       );
   }
 
@@ -49,8 +49,11 @@ export class SecurityDeviceController {
     @Req() req: Request & RequestWithDeviceId,
   ) {
     debugger;
+    const userId = await this.commandBus.execute(
+      new GetUserIdByDeviceIdCommand(req.deviceId),
+    );
     await this.commandBus.execute(
-      new DeleteAllSessionExcludeCurrentCommand(req.deviceId),
+      new DeleteAllSessionExcludeCurrentCommand(req.deviceId, userId),
     );
   }
 
@@ -65,17 +68,15 @@ export class SecurityDeviceController {
     );
 
     if (foundDeviceByDeviceId) {
-      const foundUserByDeviceIdFromToken: UserDbType | null =
+      const foundUserByDeviceIdFromToken: UserDbViewModelType | null =
         await this.commandBus.execute(
           new GetUserByDeviceIdCommand(req.deviceId),
         );
-      const foundUserFromUriParam: UserDbType | null =
-        await this.commandBus.execute(
-          new GetUserByDeviceIdCommand(new ObjectId(deviceId)),
-        );
+      const foundUserFromUriParam: UserDbViewModelType | null =
+        await this.commandBus.execute(new GetUserByDeviceIdCommand(deviceId));
       if (
-        foundUserFromUriParam?._id.toString() ===
-        foundUserByDeviceIdFromToken?._id.toString()
+        foundUserFromUriParam?.id.toString() ===
+        foundUserByDeviceIdFromToken?.id.toString()
       ) {
         await this.commandBus.execute(
           new DeleteCurrentSessionByIdCommand(deviceId),

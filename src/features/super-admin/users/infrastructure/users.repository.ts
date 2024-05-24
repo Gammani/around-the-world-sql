@@ -22,7 +22,7 @@ export class UsersRepository {
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  async findUserById(userId: string): Promise<UserDbType | null> {
+  async findUserById(userId: string): Promise<UserDbViewModelType | null> {
     if (validateUUID(userId)) {
       const foundUser = await this.dataSource.query(
         `SELECT account."id", account.login, account.email, account."createdAt", account."passwordHash",
@@ -34,7 +34,7 @@ WHERE account."id" = $1`,
         [userId],
       );
       if (foundUser.length > 0) {
-        return foundUser;
+        return await this.findUserByLoginOrEmail(foundUser[0].email);
       } else {
         return null;
       }
@@ -272,12 +272,18 @@ WHERE "UserEmailData"."userId" = $1;`,
     return result[1] === 1;
   }
 
-  async updateConfirmationCode(email: string, code: string): Promise<boolean> {
-    const result = await this.UserModel.updateOne(
-      { 'accountData.email': email },
-      { $set: { 'emailConfirmation.confirmationCode': code } },
+  async updateConfirmationCode(
+    userId: string,
+    code: string,
+    expirationDate: Date,
+  ): Promise<boolean> {
+    const result = await this.dataSource.query(
+      `UPDATE public."UserEmailData"
+SET "confirmationCode" = $1, "expirationDate" = $2
+WHERE "UserEmailData"."userId" = $3;`,
+      [code, expirationDate, userId],
     );
-    return result.modifiedCount === 1;
+    return result[1] === 1;
   }
 
   async updatePassword(

@@ -40,6 +40,7 @@ import { UsersService } from '../../../super-admin/users/application/users.servi
 import { UserCreateModel } from '../../../super-admin/users/api/models/input/create-user.input.model';
 import { CreateUserCommand } from '../../../super-admin/users/application/use-cases/createUser.useCase';
 import { GetUserViewModelByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserViewModelByDeviceId.useCase';
+import { RegistrationResendCodeCommand } from '../application/use-cases/registrationResendCode.useCase';
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -129,7 +130,9 @@ export class AuthController {
   @Post('registration-email-resending')
   @HttpCode(204)
   async registrationEmailResending(@Body() emailInputModel: EmailInputModel) {
-    await this.commandBus.execute(new PasswordRecoveryCommand(emailInputModel));
+    await this.commandBus.execute(
+      new RegistrationResendCodeCommand(emailInputModel),
+    );
   }
 
   @UseGuards(CheckRefreshToken)

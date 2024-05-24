@@ -62,6 +62,13 @@ export type DeviceDbType = {
   deviceName: string;
   lastActiveDate: string;
 };
+export type DeviceViewDbType = {
+  id: string;
+  userId: string;
+  ip: string;
+  deviceName: string;
+  lastActiveDate: string;
+};
 export type DeviceSqlDbType = {
   id: string;
   userId: string;

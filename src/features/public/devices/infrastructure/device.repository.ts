@@ -60,9 +60,7 @@ VALUES ($1, $2, $3, $4, $5);`,
   // }
   async findUserIdByDeviceId(
     deviceId: ObjectId | string,
-  ): Promise<ObjectId | string | null> {
-    debugger;
-    console.log(deviceId);
+  ): Promise<string | null> {
     if (validateUUID(deviceId.toString())) {
       const foundDevice: DeviceSqlDbType[] = await this.dataSource.query(
         `SELECT id, ip, "deviceName", "lastActiveDate", "userId"
@@ -71,7 +69,6 @@ WHERE id = $1;`,
         [deviceId],
       );
       if (foundDevice.length > 0) {
-        console.log(foundDevice);
         return foundDevice[0].userId;
       } else {
         return null;
@@ -141,14 +138,20 @@ WHERE id = $1;`,
       return false;
     }
   }
-  async deleteAllSessionExcludeCurrent(deviceId: ObjectId | string) {
-    await this.DeviceModel.deleteMany({
-      _id: { $ne: deviceId },
-    });
+  async deleteAllSessionExcludeCurrent(
+    deviceId: ObjectId | string,
+    userId: string,
+  ) {
+    await this.dataSource.query(
+      `DELETE FROM public."Device"
+WHERE "Device".id <> $1
+AND "Device"."userId" = $2`,
+      [deviceId, userId],
+    );
     return;
   }
   async deleteAll() {
-    await this.DeviceModel.deleteMany({});
+    await this.dataSource.query(`DELETE FROM public."Device"`);
   }
   // для своего теста
   async findDeviceTestByUserId(userId: string) {

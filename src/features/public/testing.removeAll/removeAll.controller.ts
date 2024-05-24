@@ -24,11 +24,11 @@ export class TestingRemoveAll {
   @HttpCode(204)
   @Delete()
   async removeAllData() {
+    await this.deviceRepository.deleteAll();
     await this.usersRepository.deleteAll();
     // await this.blogRepository.deleteAll();
     // await this.postsRepository.deleteAll();
     // await this.commentsRepository.deleteAll();
-    // await this.deviceRepository.deleteAll();
     // await this.postLikeRepository.deleteAll();
     // await this.commentLikeRepository.deleteAll();
     // await this.expiredTokenRepository.deleteAll();
