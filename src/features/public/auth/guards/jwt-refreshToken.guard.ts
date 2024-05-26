@@ -27,10 +27,10 @@ export class CheckRefreshToken {
     const cookieRefreshToken = req.cookies.refreshToken;
     if (!cookieRefreshToken) throw new UnauthorizedException();
 
-    // const foundTokenFromExpiredTokens =
-    //   await this.expiredTokenRepository.findToken(cookieRefreshToken);
-    // // console.log(foundTokenFromExpiredTokens);
-    // if (foundTokenFromExpiredTokens) throw new UnauthorizedException();
+    const foundTokenFromExpiredTokens =
+      await this.expiredTokenRepository.findToken(cookieRefreshToken);
+    // console.log(foundTokenFromExpiredTokens);
+    if (foundTokenFromExpiredTokens) throw new UnauthorizedException();
 
     const isExpiredToken =
       await this.expiredTokenRepository.isExpiredToken(cookieRefreshToken);

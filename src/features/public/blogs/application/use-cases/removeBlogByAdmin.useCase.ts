@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BlogsRepository } from '../../infrastructure/blogs.repository';
-import { PostsRepository } from '../../../posts/infrastructure/posts.repository';
+import { PostsRepository } from '../../../../public/posts/infrastructure/posts.repository';
 
 export class RemoveBlogByAdminCommand {
   constructor(public blogId: string) {}

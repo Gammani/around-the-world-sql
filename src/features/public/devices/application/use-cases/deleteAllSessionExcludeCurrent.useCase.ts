@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ObjectId } from 'mongodb';
 import { DeviceRepository } from '../../infrastructure/device.repository';
+import { ExpiredTokenRepository } from '../../../expiredToken/infrastructure/expired.token.repository';
 
 export class DeleteAllSessionExcludeCurrentCommand {
   constructor(
@@ -13,12 +14,20 @@ export class DeleteAllSessionExcludeCurrentCommand {
 export class DeleteAllSessionExcludeCurrentUseCase
   implements ICommandHandler<DeleteAllSessionExcludeCurrentCommand>
 {
-  constructor(private devicesRepository: DeviceRepository) {}
+  constructor(
+    private devicesRepository: DeviceRepository,
+    private expiredTokenRepository: ExpiredTokenRepository,
+  ) {}
 
   async execute(command: DeleteAllSessionExcludeCurrentCommand) {
-    return await this.devicesRepository.deleteAllSessionExcludeCurrent(
+    await this.devicesRepository.deleteAllSessionExcludeCurrent(
       command.deviceId,
       command.userId,
     );
+    await this.expiredTokenRepository.removeAllExpiredTokensByDeviceIdFromUserIdAllSessionExcludeCurrent(
+      command.deviceId.toString(),
+      command.userId,
+    );
+    return;
   }
 }

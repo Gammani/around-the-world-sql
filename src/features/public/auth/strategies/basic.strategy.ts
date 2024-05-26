@@ -8,7 +8,6 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly configService: ConfigService) {
     super();
   }
-
   public validate = async (username, password): Promise<boolean> => {
     const adminLogin = this.configService.get('ADMIN_LOGIN');
     const adminPassword = this.configService.get('ADMIN_PASS');

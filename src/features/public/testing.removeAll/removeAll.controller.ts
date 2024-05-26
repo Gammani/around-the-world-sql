@@ -1,12 +1,12 @@
 import { Controller, Delete, HttpCode } from '@nestjs/common';
 import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
-import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
 import { PostsRepository } from '../posts/infrastructure/posts.repository';
 import { CommentsRepository } from '../comments/infrastructure/comments.repository';
 import { DeviceRepository } from '../devices/infrastructure/device.repository';
 import { PostLikeRepository } from '../postLike/infrastructure/postLike.repository';
 import { CommentLikeRepository } from '../commentLike/infrastructure/commentLike.repository';
 import { ExpiredTokenRepository } from '../expiredToken/infrastructure/expired.token.repository';
+import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
 
 @Controller('testing/all-data')
 export class TestingRemoveAll {
@@ -31,7 +31,7 @@ export class TestingRemoveAll {
     // await this.commentsRepository.deleteAll();
     // await this.postLikeRepository.deleteAll();
     // await this.commentLikeRepository.deleteAll();
-    // await this.expiredTokenRepository.deleteAll();
+    await this.expiredTokenRepository.deleteAll();
     return;
   }
 }

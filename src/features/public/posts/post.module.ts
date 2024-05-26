@@ -5,9 +5,6 @@ import { PostLike, PostLikeSchema } from '../postLike/domain/postLike.entity';
 import { PostsService } from './application/posts.service';
 import { PostsRepository } from './infrastructure/posts.repository';
 import { PostsController } from './api/posts.controller';
-import { BlogsService } from '../blogs/application/blogs.service';
-import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
-import { Blog, BlogSchema } from '../blogs/domain/blogs.entity';
 import {
   CommentLike,
   CommentLikeSchema,
@@ -28,8 +25,6 @@ import {
 import { JwtService } from '../auth/application/jwt.service';
 import { CommentsService } from '../comments/application/comments.service';
 import { CommentsRepository } from '../comments/infrastructure/comments.repository';
-import { BasicAuthGuard } from '../auth/guards/basic-auth.guard';
-import { CqrsModule } from '@nestjs/cqrs';
 import { GetQueryPostsUseCase } from './application/use-cases/getQueryPosts.useCase';
 import { CreatePostByAdminWithBlogIdUseCase } from './application/use-cases/createPostByAdminWithBlogId.useCase';
 import { GetPostByIdUseCase } from './application/use-cases/getPostById.useCase';
@@ -47,6 +42,10 @@ import { UsersQueryRepository } from '../../super-admin/users/infrastructure/use
 import { BlogIdIsExistConstraint } from '../../../infrastructure/decorators/validate/blogId.isExist.decorator';
 import { PasswordAdapter } from '../../adapter/password.adapter';
 import { EmailManager } from '../../adapter/email.manager';
+import { BlogsService } from '../blogs/application/blogs.service';
+import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
+import { Blog, BlogSchema } from '../blogs/domain/blogs.entity';
+import { SharingModule } from '../../../settings/sharingModules/sharingModule';
 
 const useCases = [
   GetQueryPostsUseCase,
@@ -74,7 +73,7 @@ const useCases = [
       { name: Device.name, schema: DeviceSchema },
       { name: ExpiredToken.name, schema: ExpiredTokenSchema },
     ]),
-    CqrsModule,
+    SharingModule,
   ],
   controllers: [PostsController],
   providers: [
@@ -98,8 +97,8 @@ const useCases = [
     EmailManager,
     CommentsService,
     CommentsRepository,
-    BasicAuthGuard,
     ...useCases,
   ],
+  exports: [PostsService, PostsRepository, PostsQueryRepository],
 })
 export class PostModule {}

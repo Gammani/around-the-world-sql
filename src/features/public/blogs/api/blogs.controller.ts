@@ -14,27 +14,28 @@ import {
 } from '@nestjs/common';
 import { BlogsQueryRepository } from '../infrastructure/blogs.query.repository';
 import { BlogsService } from '../application/blogs.service';
-import { PostsQueryRepository } from '../../posts/infrastructure/posts.query.repository';
-import { PostsService } from '../../posts/application/posts.service';
+
 import { BlogWithPaginationViewModel } from './models/output/blog.output.model';
 import {
   BlogCreateModel,
   BlogUpdateModel,
 } from './models/input/blog.input.model';
-import { PostsWithPaginationViewModel } from '../../posts/api/models/output/post.output.model';
-import { PostCreateModel } from '../../posts/api/models/input/post.input.model';
-import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { GetAllQueryBlogsCommand } from '../application/use-cases/getAllQueryBlogs.useCase';
 import { CreateBlogByAdminCommand } from '../application/use-cases/createBlogByAdmin.useCase';
 import { GetBlogByIdCommand } from '../application/use-cases/getBlogById.useCase';
-import { GetQueryPostsCommand } from '../../posts/application/use-cases/getQueryPosts.useCase';
-import { CreatePostByAdminWithBlogIdCommand } from '../../posts/application/use-cases/createPostByAdminWithBlogId.useCase';
 import { GetQueryBlogByIdCommand } from '../application/use-cases/getQueryBlogById.useCase';
 import { UpdateBlogByAdminCommand } from '../application/use-cases/updateBlogByAdmin.useCase';
 import { Request } from 'express';
-import { RequestWithUserId } from '../../auth/api/models/input/auth.input.model';
 import { BlogDbType } from '../../../types';
+import { PostsQueryRepository } from '../../../public/posts/infrastructure/posts.query.repository';
+import { PostsService } from '../../../public/posts/application/posts.service';
+import { BasicAuthGuard } from '../../../public/auth/guards/basic-auth.guard';
+import { RequestWithUserId } from '../../../public/auth/api/models/input/auth.input.model';
+import { PostsWithPaginationViewModel } from '../../../public/posts/api/models/output/post.output.model';
+import { GetQueryPostsCommand } from '../../../public/posts/application/use-cases/getQueryPosts.useCase';
+import { PostCreateModel } from '../../../public/posts/api/models/input/post.input.model';
+import { CreatePostByAdminWithBlogIdCommand } from '../../../public/posts/application/use-cases/createPostByAdminWithBlogId.useCase';
 
 @Controller('blogs')
 export class BlogsController {

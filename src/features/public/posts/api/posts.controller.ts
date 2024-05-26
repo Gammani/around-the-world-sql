@@ -14,7 +14,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PostsService } from '../application/posts.service';
-import { BlogsService } from '../../blogs/application/blogs.service';
 import { CommentsQueryRepository } from '../../comments/infrastructure/comments.query.repository';
 import { PostsQueryRepository } from '../infrastructure/posts.query.repository';
 import { PostsWithPaginationViewModel } from './models/output/post.output.model';
@@ -41,7 +40,6 @@ import { GetPostLikeFromUserCommand } from '../../postLike/application/use-cases
 import { UpdatePostLikeStatusCommand } from '../../postLike/application/use-cases/updatePostLikeStatus.useCase';
 import { GetQueryCommentsByPostIdCommand } from '../../comments/application/use-cases/getQueryCommentsByPostId.useCase';
 import { GetQueryPostsCommand } from '../application/use-cases/getQueryPosts.useCase';
-import { GetBlogByIdCommand } from '../../blogs/application/use-cases/getBlogById.useCase';
 import { CreatePostByAdminCommand } from '../application/use-cases/createPostByAdmin.useCase';
 import { CreateCommentCommand } from '../../comments/application/use-cases/CreateComment.useCase';
 import { GetQueryPostByIdCommand } from '../application/use-cases/getQueryPostById.useCase';
@@ -56,6 +54,8 @@ import {
   UserDbType,
 } from '../../../types';
 import { GetUserByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserByDeviceId.useCase';
+import { BlogsService } from '../../blogs/application/blogs.service';
+import { GetBlogByIdCommand } from '../../blogs/application/use-cases/getBlogById.useCase';
 
 @Controller('posts')
 export class PostsController {

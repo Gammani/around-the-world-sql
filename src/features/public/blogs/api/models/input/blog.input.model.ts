@@ -45,6 +45,11 @@ export class BlogUpdateModel {
   @IsNotEmpty()
   websiteUrl: string;
 }
+export type CreatedBlogType = {
+  name: string;
+  description: string;
+  websiteUrl: string;
+};
 
 export type BlogInputDtoType = {
   blogId: ObjectId;

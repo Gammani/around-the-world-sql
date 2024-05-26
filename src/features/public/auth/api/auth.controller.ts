@@ -41,6 +41,7 @@ import { UserCreateModel } from '../../../super-admin/users/api/models/input/cre
 import { CreateUserCommand } from '../../../super-admin/users/application/use-cases/createUser.useCase';
 import { GetUserViewModelByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserViewModelByDeviceId.useCase';
 import { RegistrationResendCodeCommand } from '../application/use-cases/registrationResendCode.useCase';
+import { AddExpiredRefreshTokenCommand } from '../application/use-cases/addExpiredRefreshTokenUseCase';
 
 @UseGuards(ThrottlerGuard)
 @Controller('auth')
@@ -98,8 +99,8 @@ export class AuthController {
     const accessToken = await this.jwtService.createAccessJWT(device.id);
     const refreshToken = await this.jwtService.createRefreshJWT(device.id);
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: false,
-      secure: false,
+      httpOnly: true,
+      secure: true,
     });
     return { accessToken: accessToken };
   }
@@ -111,9 +112,12 @@ export class AuthController {
     @Req() req: Request & RequestWithDeviceId,
     @Res({ passthrough: true }) res: Response,
   ) {
-    // await this.commandBus.execute(
-    //   new AddExpiredRefreshTokenCommand(req.deviceId, req.cookies.refreshToken),
-    // );
+    await this.commandBus.execute(
+      new AddExpiredRefreshTokenCommand(
+        req.deviceId.toString(),
+        req.cookies.refreshToken,
+      ),
+    );
 
     const accessToken = await this.jwtService.createAccessJWT(req.deviceId);
     const refreshToken = await this.jwtService.createRefreshJWT(req.deviceId);
@@ -121,8 +125,8 @@ export class AuthController {
       new FindAndUpdateDeviceAfterRefreshCommand(req.deviceId),
     );
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: false,
-      secure: false,
+      httpOnly: true,
+      secure: true,
     });
     return { accessToken: accessToken };
   }

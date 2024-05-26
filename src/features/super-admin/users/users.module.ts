@@ -7,7 +7,6 @@ import { UsersRepository } from './infrastructure/users.repository';
 import { UsersQueryRepository } from './infrastructure/users.query.repository';
 import { GetUserViewModelByDeviceIdUseCase } from './application/use-cases/getUserViewModelByDeviceId.useCase';
 import { CreateUserUserCase } from './application/use-cases/createUser.useCase';
-import { CqrsModule } from '@nestjs/cqrs';
 import { GetUserByDeviceIdUseCase } from './application/use-cases/getUserByDeviceId.useCase';
 import { GetAllQueryUsersUseCase } from './application/use-cases/getAllQueryUsers.useCase';
 import { GetUserByIdUseCase } from './application/use-cases/getUserById.useCase';
@@ -26,9 +25,9 @@ import { EmailManager } from '../../adapter/email.manager';
 import { SecurityDevicesService } from '../../public/devices/application/security.devices.service';
 import { DeviceRepository } from '../../public/devices/infrastructure/device.repository';
 import { ExpiredTokenRepository } from '../../public/expiredToken/infrastructure/expired.token.repository';
-import { BasicAuthGuard } from '../../public/auth/guards/basic-auth.guard';
 import { GetUserViewModelByUserIdUseCase } from './application/use-cases/getUserViewModelByUserId.useCase';
 import { GetUserIdByDeviceIdUseCase } from './application/use-cases/getUserIdByDeviceId.useCase';
+import { SharingModule } from '../../../settings/sharingModules/sharingModule';
 
 const useCases = [
   CreateUserUserCase,
@@ -52,7 +51,7 @@ const useCases = [
       { name: Device.name, schema: DeviceSchema },
       { name: ExpiredToken.name, schema: ExpiredTokenSchema },
     ]),
-    CqrsModule,
+    SharingModule,
   ],
   controllers: [UsersController],
   providers: [
@@ -64,7 +63,6 @@ const useCases = [
     SecurityDevicesService,
     DeviceRepository,
     ExpiredTokenRepository,
-    BasicAuthGuard,
     ...useCases,
   ],
 })

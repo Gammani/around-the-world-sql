@@ -1,5 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BlogCreateModel } from '../../api/models/input/blog.input.model';
+import {
+  BlogCreateModel,
+  CreatedBlogType,
+} from '../../api/models/input/blog.input.model';
 import { Model } from 'mongoose';
 import {
   Blog,
@@ -27,10 +30,11 @@ export class CreateBlogByAdminUseCase
   async execute(
     command: CreateBlogByAdminCommand,
   ): Promise<CreatedBlogViewModel> {
-    const createdBlog = this.BlogModel.createBlog(
-      command.inputBlogModel,
-      this.BlogModel,
-    );
+    const createdBlog: CreatedBlogType = {
+      name: command.inputBlogModel.name,
+      description: command.inputBlogModel.description,
+      websiteUrl: command.inputBlogModel.websiteUrl,
+    };
 
     return await this.blogsRepository.createBlogByAdmin(createdBlog);
   }

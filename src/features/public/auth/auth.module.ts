@@ -15,7 +15,6 @@ import {
   ExpiredToken,
   ExpiredTokenSchema,
 } from '../expiredToken/domain/expired-token.entity';
-import { CqrsModule } from '@nestjs/cqrs';
 import { ConfirmEmailUseCase } from './application/use-cases/confirmEmail.useCase';
 import { UpdatePasswordUseCase } from './application/use-cases/updatePassword.useCase';
 import { PasswordRecoveryUseCase } from './application/use-cases/passwordRecovery.useCase';
@@ -33,6 +32,8 @@ import { IsValidRecoveryCodeConstraint } from '../../../infrastructure/decorator
 import { IsValidEmailConstraint } from '../../../infrastructure/decorators/validate/email.isValid.decorator';
 import { IsValidPasswordRecoveryCodeConstraint } from '../../../infrastructure/decorators/validate/isValid.passwordRecoveryCode.decorator';
 import { RegistrationResendCodeUseCase } from './application/use-cases/registrationResendCode.useCase';
+import { AddExpiredRefreshTokenUseCase } from './application/use-cases/addExpiredRefreshTokenUseCase';
+import { SharingModule } from '../../../settings/sharingModules/sharingModule';
 
 const useCases = [
   ConfirmEmailUseCase,
@@ -41,6 +42,7 @@ const useCases = [
   PasswordRecoveryUseCase,
   FindAndUpdateDeviceAfterRefreshUseCase,
   RegistrationResendCodeUseCase,
+  AddExpiredRefreshTokenUseCase,
 ];
 const decorators = [
   LoginIsExistConstraint,
@@ -65,7 +67,7 @@ const decorators = [
         limit: 5,
       },
     ]),
-    CqrsModule,
+    SharingModule,
   ],
   controllers: [AuthController],
   providers: [

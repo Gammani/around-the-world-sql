@@ -7,8 +7,8 @@ import {
 } from '../domain/blogs.entity';
 import { Model } from 'mongoose';
 import { BlogsRepository } from '../infrastructure/blogs.repository';
-import { PostsRepository } from '../../posts/infrastructure/posts.repository';
 import { BlogDbType } from '../../../types';
+import { PostsRepository } from '../../../public/posts/infrastructure/posts.repository';
 
 @Injectable()
 export class BlogsService {

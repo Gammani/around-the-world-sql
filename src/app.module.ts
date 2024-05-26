@@ -12,7 +12,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './features/public/auth/auth.module';
 import { RemoveAllModule } from './features/public/testing.removeAll/removeAll.module';
 import { UsersModule } from './features/super-admin/users/users.module';
-import { BlogModule } from './features/public/blogs/blog.module';
 import { PostModule } from './features/public/posts/post.module';
 import { CommentModule } from './features/public/comments/comment.module';
 import { ExpiredTokenModule } from './features/public/expiredToken/expired.token.module';
@@ -29,6 +28,9 @@ import { UsersRepository } from './features/super-admin/users/infrastructure/use
 import { SecurityDevicesService } from './features/public/devices/application/security.devices.service';
 import { DeviceRepository } from './features/public/devices/infrastructure/device.repository';
 import { JwtService } from './features/public/auth/application/jwt.service';
+import { ExpiredTokenRepository } from './features/public/expiredToken/infrastructure/expired.token.repository';
+import { BlogModule } from './features/public/blogs/blog.module';
+import { BasicStrategy } from 'passport-http';
 
 @Module({
   imports: [

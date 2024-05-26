@@ -5,19 +5,19 @@ import { BlogsController } from './api/blogs.controller';
 import { BlogsQueryRepository } from './infrastructure/blogs.query.repository';
 import { BlogsService } from './application/blogs.service';
 import { BlogsRepository } from './infrastructure/blogs.repository';
-import { PostsQueryRepository } from '../posts/infrastructure/posts.query.repository';
-import { Post, PostSchema } from '../posts/domain/posts.entity';
-import { PostLike, PostLikeSchema } from '../postLike/domain/postLike.entity';
-import { PostsService } from '../posts/application/posts.service';
-import { PostsRepository } from '../posts/infrastructure/posts.repository';
-import { BasicStrategy } from '../auth/strategies/basic.strategy';
-import { CqrsModule } from '@nestjs/cqrs';
 import { GetAllQueryBlogsUseCase } from './application/use-cases/getAllQueryBlogs.useCase';
 import { CreateBlogByAdminUseCase } from './application/use-cases/createBlogByAdmin.useCase';
 import { GetBlogByIdUseCase } from './application/use-cases/getBlogById.useCase';
 import { GetQueryBlogByIdUseCase } from './application/use-cases/getQueryBlogById.useCase';
 import { UpdateBlogByAdminUseCase } from './application/use-cases/updateBlogByAdmin.useCase';
 import { RemoveBlogByAdminUseCase } from './application/use-cases/removeBlogByAdmin.useCase';
+import { Post, PostSchema } from '../../public/posts/domain/posts.entity';
+import {
+  PostLike,
+  PostLikeSchema,
+} from '../../public/postLike/domain/postLike.entity';
+import { SharingModule } from '../../../settings/sharingModules/sharingModule';
+import { PostModule } from '../posts/post.module';
 
 const useCases = [
   GetAllQueryBlogsUseCase,
@@ -35,18 +35,10 @@ const useCases = [
       { name: Post.name, schema: PostSchema },
       { name: PostLike.name, schema: PostLikeSchema },
     ]),
-    CqrsModule,
+    PostModule,
+    SharingModule,
   ],
   controllers: [BlogsController],
-  providers: [
-    BlogsService,
-    BlogsRepository,
-    BlogsQueryRepository,
-    PostsService,
-    PostsRepository,
-    PostsQueryRepository,
-    BasicStrategy,
-    ...useCases,
-  ],
+  providers: [BlogsService, BlogsRepository, BlogsQueryRepository, ...useCases],
 })
 export class BlogModule {}

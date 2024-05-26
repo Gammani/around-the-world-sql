@@ -25,6 +25,7 @@ import { UsersRepository } from '../../super-admin/users/infrastructure/users.re
 import { UsersQueryRepository } from '../../super-admin/users/infrastructure/users.query.repository';
 import { PasswordAdapter } from '../../adapter/password.adapter';
 import { EmailManager } from '../../adapter/email.manager';
+import { AddExpiredRefreshTokenUseCase } from '../auth/application/use-cases/addExpiredRefreshTokenUseCase';
 
 const useCases = [
   DeleteCurrentSessionUseCase,
@@ -32,7 +33,7 @@ const useCases = [
   FoundDeviceFromUserUseCase,
   GetUserByDeviceIdUseCase,
   GetDeviceByDeviceIdUseCase,
-  // AddExpiredRefreshTokenUseCase,
+  AddExpiredRefreshTokenUseCase,
   DeleteAllSessionExcludeCurrentUseCase,
 ];
 
