@@ -6,14 +6,13 @@ import {
 } from '../domain/blogs.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
 import { CreatedBlogViewModel } from '../api/models/output/blog.output.model';
-import { BlogDbType } from '../../../types';
+import { BlogViewDbType } from '../../../types';
 import {
   BlogUpdateModel,
   CreatedBlogType,
 } from '../api/models/input/blog.input.model';
-import { v1 as uuidv1 } from 'uuid';
+import { v1 as uuidv1, validate as validateUUID } from 'uuid';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -37,7 +36,7 @@ export class BlogsRepository {
       isMembership: true,
     };
     await this.dataSource.query(
-      `INSERT INTO public.blogs(
+      `INSERT INTO public."Blogs"(
 id, name, description, "websiteUrl", "createdAt", "isMembership")
 VALUES ($1, $2, $3, $4, $5, $6);`,
       [
@@ -59,37 +58,63 @@ VALUES ($1, $2, $3, $4, $5, $6);`,
     };
   }
 
-  async findBlogById(blogId: string): Promise<BlogDbType | null> {
-    if (!ObjectId.isValid(blogId)) {
+  async findBlogById(blogId: string): Promise<BlogViewDbType | null> {
+    if (validateUUID(blogId)) {
+      const foundBlog = await this.dataSource.query(
+        `SELECT id, name, description, "websiteUrl", "createdAt", "isMembership"
+FROM public."Blogs"
+WHERE id = $1`,
+        [blogId],
+      );
+      if (foundBlog.length > 0) {
+        return foundBlog[0];
+      } else {
+        return null;
+      }
+    } else {
       return null;
     }
-    return this.BlogModel.findById(blogId);
   }
 
   async updateBlogByAdmin(
     blogId: string,
     inputBlogModel: BlogUpdateModel,
   ): Promise<boolean> {
-    const result = await this.BlogModel.updateOne(
-      { _id: blogId },
-      {
-        $set: {
-          name: inputBlogModel.name,
-          description: inputBlogModel.description,
-          websiteUrl: inputBlogModel.websiteUrl,
-        },
-      },
-    );
-    return result.matchedCount === 1;
+    try {
+      await this.dataSource.query(
+        `UPDATE public."Blogs"
+SET name=$1, description=$2, "websiteUrl"=$3
+WHERE id = $4`,
+        [
+          inputBlogModel.name,
+          inputBlogModel.description,
+          inputBlogModel.websiteUrl,
+          blogId,
+        ],
+      );
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   }
 
   async deleteBlog(blogId: string): Promise<boolean> {
-    const result = await this.BlogModel.deleteOne({ _id: blogId });
-    return result.deletedCount === 1;
+    try {
+      await this.dataSource.query(
+        `DELETE FROM public."Blogs"
+WHERE id = $1`,
+        [blogId],
+      );
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   }
 
   async deleteAll() {
-    await this.BlogModel.deleteMany({});
+    await this.dataSource.query(`DELETE FROM public."Blogs"`);
   }
   // for tests
   async findBlogByName(blogName: string) {

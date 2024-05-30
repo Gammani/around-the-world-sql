@@ -94,7 +94,7 @@ type NewestLikesType = {
   userId: ObjectId;
   login: string;
 };
-type ExtendedLikesInfoType = {
+export type ExtendedLikesInfoType = {
   likesCount: number;
   dislikesCount: number;
   myStatus: LikeStatus;
@@ -110,9 +110,26 @@ export type PostDbType = {
   createdAt: string;
   extendedLikesInfo: ExtendedLikesInfoType;
 };
+export type PostViewDbType = {
+  id: string;
+  title: string;
+  shortDescription: string;
+  content: string;
+  blogId: string;
+  blogName: string;
+  createdAt: string;
+};
 
 export type BlogDbType = {
   _id: ObjectId;
+  name: string;
+  description: string;
+  websiteUrl: string;
+  createdAt: string;
+  isMembership: boolean;
+};
+export type BlogViewDbType = {
+  id: string;
   name: string;
   description: string;
   websiteUrl: string;
@@ -146,6 +163,16 @@ export type PostLikeDbType = {
   postId: ObjectId;
   likeStatus: LikeStatus;
   addedAt: string;
+  lastUpdate: string;
+};
+export type PostLikeViewDbType = {
+  id: string;
+  userId: string;
+  login: string;
+  blogId: string;
+  postId: string;
+  likeStatus: LikeStatus;
+  addedAt: Date;
   lastUpdate: string;
 };
 export type CommentLikeDbType = {

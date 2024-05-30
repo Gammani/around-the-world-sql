@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BlogsQueryRepository } from '../../../../super-admin/blogs/infrastructure/blogs.query.repository';
+import { BlogsQueryRepository } from '../../infrastructure/blogs.query.repository';
 
 export class GetAllQueryBlogsCommand {
   constructor(

@@ -8,12 +8,16 @@ import {
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { LikeStatus, PostLikeDbType } from '../../../types';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class PostLikeRepository {
   constructor(
     @InjectModel(PostLike.name)
     private PostLikeModel: Model<PostLikeDocument> & PostLikeModelStaticType,
+    @InjectDataSource()
+    private dataSource: DataSource,
   ) {}
 
   async findPostLike(
@@ -49,7 +53,15 @@ export class PostLikeRepository {
     return result.matchedCount === 1;
   }
 
+  async deletePostLikesByPostId(postId: string) {
+    return await this.dataSource.query(
+      `DELETE FROM public."PostLike"
+WHERE "postId" = $1`,
+      [postId],
+    );
+  }
+
   async deleteAll() {
-    await this.PostLikeModel.deleteMany({});
+    await this.dataSource.query(`DELETE FROM public."PostLike"`);
   }
 }

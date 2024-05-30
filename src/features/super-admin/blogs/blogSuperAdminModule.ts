@@ -7,7 +7,7 @@ import { BlogsService } from './application/blogs.service';
 import { BlogsRepository } from './infrastructure/blogs.repository';
 import { GetAllQueryBlogsUseCase } from './application/use-cases/getAllQueryBlogs.useCase';
 import { CreateBlogByAdminUseCase } from './application/use-cases/createBlogByAdmin.useCase';
-import { GetBlogByIdUseCase } from './application/use-cases/getBlogById.useCase';
+import { GetBlogByIdUseCase } from './application/use-cases/getBlogByIdUseCase';
 import { GetQueryBlogByIdUseCase } from './application/use-cases/getQueryBlogById.useCase';
 import { UpdateBlogByAdminUseCase } from './application/use-cases/updateBlogByAdmin.useCase';
 import { RemoveBlogByAdminUseCase } from './application/use-cases/removeBlogByAdmin.useCase';
@@ -17,7 +17,7 @@ import {
   PostLikeSchema,
 } from '../../public/postLike/domain/postLike.entity';
 import { SharingModule } from '../../../settings/sharingModules/sharingModule';
-import { PostModule } from '../posts/post.module';
+import { PostModule } from '../../public/posts/post.module';
 
 const useCases = [
   GetAllQueryBlogsUseCase,
@@ -41,4 +41,4 @@ const useCases = [
   controllers: [BlogsController],
   providers: [BlogsService, BlogsRepository, BlogsQueryRepository, ...useCases],
 })
-export class BlogModule {}
+export class BlogSuperAdminModule {}

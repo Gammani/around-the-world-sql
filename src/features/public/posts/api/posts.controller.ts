@@ -17,10 +17,7 @@ import { PostsService } from '../application/posts.service';
 import { CommentsQueryRepository } from '../../comments/infrastructure/comments.query.repository';
 import { PostsQueryRepository } from '../infrastructure/posts.query.repository';
 import { PostsWithPaginationViewModel } from './models/output/post.output.model';
-import {
-  PostCreateModelWithBlogId,
-  UpdateInputPostModelType,
-} from './models/input/post.input.model';
+import { PostCreateModelWithBlogId } from './models/input/post.input.model';
 import { PostLikeModel } from './models/input/post.like.model';
 import { PostLikeService } from '../../postLike/application/postLike.service';
 import { Request } from 'express';
@@ -39,23 +36,22 @@ import { CreatePostLikeCommand } from '../../postLike/application/use-cases/crea
 import { GetPostLikeFromUserCommand } from '../../postLike/application/use-cases/getPostLikeFromUser.useCase';
 import { UpdatePostLikeStatusCommand } from '../../postLike/application/use-cases/updatePostLikeStatus.useCase';
 import { GetQueryCommentsByPostIdCommand } from '../../comments/application/use-cases/getQueryCommentsByPostId.useCase';
-import { GetQueryPostsCommand } from '../application/use-cases/getQueryPosts.useCase';
-import { CreatePostByAdminCommand } from '../application/use-cases/createPostByAdmin.useCase';
+import { GetQueryPostsCommand } from '../application/use-cases/getQueryPostsUseCase';
 import { CreateCommentCommand } from '../../comments/application/use-cases/CreateComment.useCase';
 import { GetQueryPostByIdCommand } from '../application/use-cases/getQueryPostById.useCase';
-import { UpdatePostByAdminCommand } from '../application/use-cases/updatePostByAdmin.useCase';
 import { DeletePostByAdminCommand } from '../application/use-cases/deletePostByAdmin.useCase';
 import { CheckAccessToken } from '../../auth/guards/jwt-accessToken.guard';
 import { UsersService } from '../../../super-admin/users/application/users.service';
 import {
-  BlogDbType,
+  BlogViewDbType,
   PostDbType,
   PostLikeDbType,
   UserDbType,
 } from '../../../types';
 import { GetUserByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserByDeviceId.useCase';
-import { BlogsService } from '../../blogs/application/blogs.service';
+import { BlogsService } from '../../../super-admin/blogs/application/blogs.service';
 import { GetBlogByIdCommand } from '../../blogs/application/use-cases/getBlogById.useCase';
+import { CreatePostByAdminCommand } from '../application/use-cases/createPostByAdmin.useCase';
 
 @Controller('posts')
 export class PostsController {
@@ -169,20 +165,20 @@ export class PostsController {
     return foundPosts;
   }
 
-  @UseGuards(BasicAuthGuard)
-  @Post()
-  async createPostByAdmin(@Body() inputPostModel: PostCreateModelWithBlogId) {
-    const foundBlog: BlogDbType | null = await this.commandBus.execute(
-      new GetBlogByIdCommand(inputPostModel.blogId),
-    );
-    if (foundBlog) {
-      return await this.commandBus.execute(
-        new CreatePostByAdminCommand(inputPostModel, foundBlog),
-      );
-    } else {
-      throw new NotFoundException();
-    }
-  }
+  // @UseGuards(BasicAuthGuard)
+  // @Post()
+  // async createPostByAdmin(@Body() inputPostModel: PostCreateModelWithBlogId) {
+  //   const foundBlog: BlogViewDbType | null = await this.commandBus.execute(
+  //     new GetBlogByIdCommand(inputPostModel.blogId),
+  //   );
+  //   if (foundBlog) {
+  //     return await this.commandBus.execute(
+  //       new CreatePostByAdminCommand(inputPostModel, foundBlog),
+  //     );
+  //   } else {
+  //     throw new NotFoundException();
+  //   }
+  // }
 
   @UseGuards(CheckAccessToken)
   @Post(':postId/comments')
@@ -220,43 +216,43 @@ export class PostsController {
     );
     if (foundPost) {
       return await this.commandBus.execute(
-        new GetQueryPostByIdCommand(postId, req.user?.userId),
+        new GetQueryPostByIdCommand(foundPost, req.user?.userId),
       );
     } else {
       throw new NotFoundException();
     }
   }
 
-  @UseGuards(BasicAuthGuard)
-  @Put(':id')
-  @HttpCode(204)
-  async updatePostByAdmin(
-    @Param('id') postId: string,
-    @Body() inputPostModel: UpdateInputPostModelType,
-  ) {
-    const foundPost = await this.commandBus.execute(
-      new GetPostByIdCommand(postId),
-    );
-    if (foundPost) {
-      await this.commandBus.execute(
-        new UpdatePostByAdminCommand(postId, inputPostModel),
-      );
-    } else {
-      throw new NotFoundException();
-    }
-  }
+  // @UseGuards(BasicAuthGuard)
+  // @Put(':id')
+  // @HttpCode(204)
+  // async updatePostByAdmin(
+  //   @Param('id') postId: string,
+  //   @Body() inputPostModel: UpdateInputPostModelType,
+  // ) {
+  //   const foundPost = await this.commandBus.execute(
+  //     new GetPostByIdCommand(postId),
+  //   );
+  //   if (foundPost) {
+  //     await this.commandBus.execute(
+  //       new UpdatePostByAdminCommand(postId, inputPostModel),
+  //     );
+  //   } else {
+  //     throw new NotFoundException();
+  //   }
+  // }
 
-  @UseGuards(BasicAuthGuard)
-  @Delete(':id')
-  @HttpCode(204)
-  async removePostByAdmin(@Param('id') postId: string) {
-    const foundPost = await this.commandBus.execute(
-      new GetPostByIdCommand(postId),
-    );
-    if (foundPost) {
-      await this.commandBus.execute(new DeletePostByAdminCommand(postId));
-    } else {
-      throw new NotFoundException();
-    }
-  }
+  // @UseGuards(BasicAuthGuard)
+  // @Delete(':id')
+  // @HttpCode(204)
+  // async removePostByAdmin(@Param('id') postId: string) {
+  //   const foundPost = await this.commandBus.execute(
+  //     new GetPostByIdCommand(postId),
+  //   );
+  //   if (foundPost) {
+  //     await this.commandBus.execute(new DeletePostByAdminCommand(postId));
+  //   } else {
+  //     throw new NotFoundException();
+  //   }
+  // }
 }

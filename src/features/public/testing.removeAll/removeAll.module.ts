@@ -22,8 +22,9 @@ import { PostLikeRepository } from '../postLike/infrastructure/postLike.reposito
 import { CommentLikeRepository } from '../commentLike/infrastructure/commentLike.repository';
 import { ExpiredTokenRepository } from '../expiredToken/infrastructure/expired.token.repository';
 import { PasswordAdapter } from '../../adapter/password.adapter';
-import { Blog, BlogSchema } from '../blogs/domain/blogs.entity';
-import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
+import { Blog, BlogSchema } from '../../super-admin/blogs/domain/blogs.entity';
+import { BlogsRepository } from '../../super-admin/blogs/infrastructure/blogs.repository';
+import { SharingModule } from '../../../settings/sharingModules/sharingModule';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
       { name: CommentLike.name, schema: CommentLikeSchema },
       { name: ExpiredToken.name, schema: ExpiredTokenSchema },
     ]),
+    SharingModule,
   ],
   controllers: [TestingRemoveAll],
   providers: [

@@ -20,9 +20,9 @@ export class BlogsService {
     private BlogModel: Model<BlogDocument> & BlogModelStaticType,
   ) {}
 
-  async findBlogById(blogId: string): Promise<BlogDbType | null> {
-    return await this.blogsRepository.findBlogById(blogId);
-  }
+  // async findBlogById(blogId: string): Promise<BlogDbType | null> {
+  //   return await this.blogsRepository.findBlogById(blogId);
+  // }
 
   async removeBlogByAdmin(blogId: string): Promise<boolean> {
     await this.postsRepository.deleteAllPostsByBlogId(blogId);

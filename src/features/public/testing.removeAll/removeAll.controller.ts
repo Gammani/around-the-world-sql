@@ -6,7 +6,7 @@ import { DeviceRepository } from '../devices/infrastructure/device.repository';
 import { PostLikeRepository } from '../postLike/infrastructure/postLike.repository';
 import { CommentLikeRepository } from '../commentLike/infrastructure/commentLike.repository';
 import { ExpiredTokenRepository } from '../expiredToken/infrastructure/expired.token.repository';
-import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
+import { BlogsRepository } from '../../super-admin/blogs/infrastructure/blogs.repository';
 
 @Controller('testing/all-data')
 export class TestingRemoveAll {
@@ -24,12 +24,12 @@ export class TestingRemoveAll {
   @HttpCode(204)
   @Delete()
   async removeAllData() {
+    await this.postLikeRepository.deleteAll();
+    await this.postsRepository.deleteAll();
+    await this.blogRepository.deleteAll();
     await this.deviceRepository.deleteAll();
     await this.usersRepository.deleteAll();
-    // await this.blogRepository.deleteAll();
-    // await this.postsRepository.deleteAll();
     // await this.commentsRepository.deleteAll();
-    // await this.postLikeRepository.deleteAll();
     // await this.commentLikeRepository.deleteAll();
     await this.expiredTokenRepository.deleteAll();
     return;

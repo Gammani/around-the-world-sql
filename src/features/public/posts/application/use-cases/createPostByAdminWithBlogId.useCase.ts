@@ -1,6 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PostCreateModel } from '../../api/models/input/post.input.model';
-import { ObjectId } from 'mongodb';
+import {
+  CreatedPostDtoType,
+  PostCreateModel,
+} from '../../api/models/input/post.input.model';
 import { PostsRepository } from '../../infrastructure/posts.repository';
 import { InjectModel } from '@nestjs/mongoose';
 import {
@@ -10,11 +12,12 @@ import {
   PostModelWithUriBlogIdStaticType,
 } from '../../domain/posts.entity';
 import { Model } from 'mongoose';
+import { v1 as uuidv1 } from 'uuid';
 
 export class CreatePostByAdminWithBlogIdCommand {
   constructor(
     public createInputPostModel: PostCreateModel,
-    public blogId: ObjectId,
+    public blogId: string,
     public blogName: string,
   ) {}
 }
@@ -32,13 +35,15 @@ export class CreatePostByAdminWithBlogIdUseCase
   ) {}
 
   async execute(command: CreatePostByAdminWithBlogIdCommand) {
-    const createdPost = this.PostModel.createPostWithUriBlogId(
-      command.createInputPostModel,
-      command.blogId,
-      command.blogName,
-      this.PostModel,
-    );
-
+    const createdPost: CreatedPostDtoType = {
+      id: uuidv1(),
+      title: command.createInputPostModel.title,
+      shortDescription: command.createInputPostModel.shortDescription,
+      content: command.createInputPostModel.content,
+      blogId: command.blogId,
+      blogName: command.blogName,
+      createdAt: new Date(),
+    };
     return await this.postsRepository.createPostByAdmin(createdPost);
   }
 }

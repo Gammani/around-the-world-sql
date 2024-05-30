@@ -43,7 +43,6 @@ export class PostCreateModelWithBlogId {
   @IsString()
   @IsNotEmpty()
   @BlogIdIsExist()
-  @Length(24, 24)
   blogId: string;
 }
 export class UpdateInputPostModelType {
@@ -65,9 +64,18 @@ export class UpdateInputPostModelType {
   @IsNotEmpty()
   content: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @BlogIdIsExist()
-  @Length(24, 24)
-  blogId: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // @BlogIdIsExist()
+  // blogId: string;
 }
+
+export type CreatedPostDtoType = {
+  id: string;
+  title: string;
+  shortDescription: string;
+  content: string;
+  blogId: string;
+  blogName: string;
+  createdAt: Date;
+};

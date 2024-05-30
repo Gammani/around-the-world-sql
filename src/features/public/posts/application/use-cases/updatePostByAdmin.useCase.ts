@@ -5,6 +5,7 @@ import { PostsRepository } from '../../infrastructure/posts.repository';
 export class UpdatePostByAdminCommand {
   constructor(
     public postId: string,
+    public blogId: string,
     public inputPostModel: UpdateInputPostModelType,
   ) {}
 }
@@ -18,6 +19,7 @@ export class UpdatePostByAdminUseCase
   async execute(command: UpdatePostByAdminCommand): Promise<boolean> {
     return await this.postsRepository.updatePostByAdmin(
       command.postId,
+      command.blogId,
       command.inputPostModel,
     );
   }

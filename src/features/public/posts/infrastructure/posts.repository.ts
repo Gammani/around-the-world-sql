@@ -8,35 +8,68 @@ import {
 import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { PostViewModel } from '../api/models/output/post.output.model';
-import { UpdateInputPostModelType } from '../api/models/input/post.input.model';
-import { LikeStatus, PostDbType } from '../../../types';
+import {
+  CreatedPostDtoType,
+  UpdateInputPostModelType,
+} from '../api/models/input/post.input.model';
+import { LikeStatus, PostViewDbType } from '../../../types';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
+import { validate as validateUUID } from 'uuid';
 
 @Injectable()
 export class PostsRepository {
   constructor(
+    @InjectDataSource()
+    private dataSource: DataSource,
     @InjectModel(Post.name)
     private PostModel: Model<PostDocument & PostModelWithUriBlogIdStaticType>,
   ) {}
 
-  async findPostById(postId: string): Promise<PostDbType | null> {
-    if (!ObjectId.isValid(postId)) {
-      return null;
+  async findPostById(postId: string): Promise<PostViewDbType | null> {
+    if (validateUUID(postId)) {
+      const foundPost = await this.dataSource.query(
+        `SELECT id, title, "shortDescription", content, "blogId", "blogName", "createdAt"
+FROM public."Posts"
+WHERE id = $1`,
+        [postId],
+      );
+      if (foundPost.length > 0) {
+        return foundPost[0];
+      } else {
+        return null;
+      }
     } else {
-      return this.PostModel.findById(postId);
+      return null;
     }
   }
 
-  async createPostByAdmin(createdPostDto: any): Promise<PostViewModel> {
-    const newPost = await createdPostDto.save();
+  async createPostByAdmin(
+    createdPostDto: CreatedPostDtoType,
+  ): Promise<PostViewModel> {
+    await this.dataSource.query(
+      `INSERT INTO public."Posts"(
+id, title, "shortDescription", content, "blogId", "blogName", "createdAt")
+VALUES ($1, $2, $3, $4, $5, $6, $7);`,
+      [
+        createdPostDto.id,
+        createdPostDto.title,
+        createdPostDto.shortDescription,
+        createdPostDto.content,
+        createdPostDto.blogId,
+        createdPostDto.blogName,
+        createdPostDto.createdAt,
+      ],
+    );
 
     return {
-      id: newPost._id.toString(),
-      title: newPost.title,
-      shortDescription: newPost.shortDescription,
-      content: newPost.content,
-      blogId: newPost.blogId.toString(),
-      blogName: newPost.blogName,
-      createdAt: newPost.createdAt,
+      id: createdPostDto.id,
+      title: createdPostDto.title,
+      shortDescription: createdPostDto.shortDescription,
+      content: createdPostDto.content,
+      blogId: createdPostDto.blogId,
+      blogName: createdPostDto.blogName,
+      createdAt: createdPostDto.createdAt.toString(),
       extendedLikesInfo: {
         likesCount: 0,
         dislikesCount: 0,
@@ -48,39 +81,54 @@ export class PostsRepository {
 
   async updatePostByAdmin(
     postId: string,
+    blogId: string,
     inputPostModel: UpdateInputPostModelType,
   ): Promise<boolean> {
-    const result = await this.PostModel.updateOne(
-      { _id: new ObjectId(postId) },
-      {
-        $set: {
-          title: inputPostModel.title,
-          shortDescription: inputPostModel.shortDescription,
-          content: inputPostModel.content,
-          blogId: inputPostModel.blogId,
-        },
-      },
-    );
-    return result.matchedCount === 1;
+    try {
+      await this.dataSource.query(
+        `UPDATE public."Posts"
+SET title=$1, "shortDescription"=$2, content=$3, "blogId"=$4
+WHERE id = $5`,
+        [
+          inputPostModel.title,
+          inputPostModel.shortDescription,
+          inputPostModel.content,
+          blogId,
+          postId,
+        ],
+      );
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   }
 
   async deletePostById(postId: string): Promise<boolean> {
-    if (!ObjectId.isValid(postId)) {
-      throw new NotFoundException();
+    try {
+      await this.dataSource.query(
+        `DELETE FROM public."Posts"
+WHERE id = $1`,
+        [postId],
+      );
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
     }
-    const result = await this.PostModel.deleteOne({
-      _id: new ObjectId(postId),
-    });
-    return result.deletedCount === 1;
   }
 
   async deleteAllPostsByBlogId(blogId: string) {
-    await this.PostModel.deleteMany({ blogId: new ObjectId(blogId) });
+    await this.dataSource.query(
+      `DELETE FROM public."Posts"
+WHERE "blogId" = $1`,
+      [blogId],
+    );
     return;
   }
 
   async deleteAll() {
-    await this.PostModel.deleteMany({});
+    await this.dataSource.query(`DELETE FROM public."Posts"`);
   }
 
   // for tests

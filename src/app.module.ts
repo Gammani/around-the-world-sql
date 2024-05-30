@@ -28,9 +28,8 @@ import { UsersRepository } from './features/super-admin/users/infrastructure/use
 import { SecurityDevicesService } from './features/public/devices/application/security.devices.service';
 import { DeviceRepository } from './features/public/devices/infrastructure/device.repository';
 import { JwtService } from './features/public/auth/application/jwt.service';
-import { ExpiredTokenRepository } from './features/public/expiredToken/infrastructure/expired.token.repository';
-import { BlogModule } from './features/public/blogs/blog.module';
-import { BasicStrategy } from 'passport-http';
+import { BlogSuperAdminModule } from './features/super-admin/blogs/blogSuperAdminModule';
+import { BlogPublicModule } from './features/public/blogs/blogPublicModule';
 
 @Module({
   imports: [
@@ -53,7 +52,8 @@ import { BasicStrategy } from 'passport-http';
     AuthModule,
     RemoveAllModule,
     UsersModule,
-    BlogModule,
+    BlogPublicModule,
+    BlogSuperAdminModule,
     PostModule,
     CommentModule,
     ExpiredTokenModule,

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Post, PostSchema } from './domain/posts.entity';
 import { PostLike, PostLikeSchema } from '../postLike/domain/postLike.entity';
@@ -25,7 +25,7 @@ import {
 import { JwtService } from '../auth/application/jwt.service';
 import { CommentsService } from '../comments/application/comments.service';
 import { CommentsRepository } from '../comments/infrastructure/comments.repository';
-import { GetQueryPostsUseCase } from './application/use-cases/getQueryPosts.useCase';
+import { GetQueryPostsUseCase } from './application/use-cases/getQueryPostsUseCase';
 import { CreatePostByAdminWithBlogIdUseCase } from './application/use-cases/createPostByAdminWithBlogId.useCase';
 import { GetPostByIdUseCase } from './application/use-cases/getPostById.useCase';
 import { CreatePostLikeUseCase } from '../postLike/application/use-cases/createPostLike-useCase';
@@ -42,10 +42,10 @@ import { UsersQueryRepository } from '../../super-admin/users/infrastructure/use
 import { BlogIdIsExistConstraint } from '../../../infrastructure/decorators/validate/blogId.isExist.decorator';
 import { PasswordAdapter } from '../../adapter/password.adapter';
 import { EmailManager } from '../../adapter/email.manager';
-import { BlogsService } from '../blogs/application/blogs.service';
-import { BlogsRepository } from '../blogs/infrastructure/blogs.repository';
-import { Blog, BlogSchema } from '../blogs/domain/blogs.entity';
 import { SharingModule } from '../../../settings/sharingModules/sharingModule';
+import { Blog, BlogSchema } from '../../super-admin/blogs/domain/blogs.entity';
+import { BlogsService } from '../../super-admin/blogs/application/blogs.service';
+import { BlogsRepository } from '../../super-admin/blogs/infrastructure/blogs.repository';
 
 const useCases = [
   GetQueryPostsUseCase,
@@ -60,6 +60,7 @@ const useCases = [
   DeletePostByAdminUseCase,
 ];
 
+@Global()
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -99,6 +100,11 @@ const useCases = [
     CommentsRepository,
     ...useCases,
   ],
-  exports: [PostsService, PostsRepository, PostsQueryRepository],
+  exports: [
+    PostsService,
+    PostsRepository,
+    PostsQueryRepository,
+    // MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
+  ],
 })
 export class PostModule {}

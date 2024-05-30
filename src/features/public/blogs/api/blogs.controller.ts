@@ -1,49 +1,27 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
-  HttpCode,
   NotFoundException,
   Param,
-  Post,
-  Put,
   Query,
   Req,
-  UseGuards,
 } from '@nestjs/common';
-import { BlogsQueryRepository } from '../infrastructure/blogs.query.repository';
-import { BlogsService } from '../application/blogs.service';
-
-import { BlogWithPaginationViewModel } from './models/output/blog.output.model';
-import {
-  BlogCreateModel,
-  BlogUpdateModel,
-} from './models/input/blog.input.model';
+import { BlogsQueryRepository } from '../../../super-admin/blogs/infrastructure/blogs.query.repository';
+import { PostsQueryRepository } from '../../posts/infrastructure/posts.query.repository';
 import { CommandBus } from '@nestjs/cqrs';
-import { GetAllQueryBlogsCommand } from '../application/use-cases/getAllQueryBlogs.useCase';
-import { CreateBlogByAdminCommand } from '../application/use-cases/createBlogByAdmin.useCase';
+import { BlogWithPaginationViewModel } from './models/output/blog.output.model';
+import { RequestWithUserId } from '../../auth/api/models/input/auth.input.model';
 import { GetBlogByIdCommand } from '../application/use-cases/getBlogById.useCase';
+import { PostsWithPaginationViewModel } from '../../posts/api/models/output/post.output.model';
+import { GetAllQueryBlogsCommand } from '../application/use-cases/getAllQueryBlogs.useCase';
+import { GetQueryPostsCommand } from '../../posts/application/use-cases/getQueryPostsUseCase';
 import { GetQueryBlogByIdCommand } from '../application/use-cases/getQueryBlogById.useCase';
-import { UpdateBlogByAdminCommand } from '../application/use-cases/updateBlogByAdmin.useCase';
-import { Request } from 'express';
-import { BlogDbType } from '../../../types';
-import { PostsQueryRepository } from '../../../public/posts/infrastructure/posts.query.repository';
-import { PostsService } from '../../../public/posts/application/posts.service';
-import { BasicAuthGuard } from '../../../public/auth/guards/basic-auth.guard';
-import { RequestWithUserId } from '../../../public/auth/api/models/input/auth.input.model';
-import { PostsWithPaginationViewModel } from '../../../public/posts/api/models/output/post.output.model';
-import { GetQueryPostsCommand } from '../../../public/posts/application/use-cases/getQueryPosts.useCase';
-import { PostCreateModel } from '../../../public/posts/api/models/input/post.input.model';
-import { CreatePostByAdminWithBlogIdCommand } from '../../../public/posts/application/use-cases/createPostByAdminWithBlogId.useCase';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(
     private readonly blogQueryRepository: BlogsQueryRepository,
-    private readonly blogService: BlogsService,
     private readonly postQueryRepository: PostsQueryRepository,
-    private readonly postsService: PostsService,
     private commandBus: CommandBus,
   ) {}
 
@@ -69,14 +47,6 @@ export class BlogsController {
         ),
       );
     return foundBlogs;
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Post()
-  async createBlogByAdmin(@Body() inputBlogModel: BlogCreateModel) {
-    return this.commandBus.execute(
-      new CreateBlogByAdminCommand(inputBlogModel),
-    );
   }
 
   @Get(':blogId/posts')
@@ -112,64 +82,13 @@ export class BlogsController {
     }
   }
 
-  @UseGuards(BasicAuthGuard)
-  @Post(':blogId/posts')
-  async createPostByBlogIdByAdmin(
-    @Param('blogId') blogId: string,
-    @Body() inputPostModel: PostCreateModel,
-  ) {
-    const foundBlog: BlogDbType | null = await this.commandBus.execute(
-      new GetBlogByIdCommand(blogId),
-    );
-    if (foundBlog) {
-      return await this.commandBus.execute(
-        new CreatePostByAdminWithBlogIdCommand(
-          inputPostModel,
-          foundBlog._id,
-          foundBlog.name,
-        ),
-      );
-    } else {
-      throw new NotFoundException();
-    }
-  }
-
   @Get(':id')
   async findBlogById(@Param('id') blogId: string) {
-    return await this.commandBus.execute(new GetQueryBlogByIdCommand(blogId));
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Put(':id')
-  @HttpCode(204)
-  async updateBlogByAdmin(
-    @Param('id') blogId: string,
-    @Body() inputBlogModel: BlogUpdateModel,
-  ) {
     const foundBlog = await this.commandBus.execute(
-      new GetBlogByIdCommand(blogId),
+      new GetQueryBlogByIdCommand(blogId),
     );
     if (foundBlog) {
-      await this.commandBus.execute(
-        new UpdateBlogByAdminCommand(blogId, inputBlogModel),
-      );
-    } else {
-      throw new NotFoundException();
-    }
-  }
-
-  @UseGuards(BasicAuthGuard)
-  @Delete(':id')
-  @HttpCode(204)
-  async removeBlogByAdmin(@Param('id') blogId: string) {
-    const foundBlog = await this.commandBus.execute(
-      new GetBlogByIdCommand(blogId),
-    );
-    if (foundBlog) {
-      const blogRemoved = await this.blogService.removeBlogByAdmin(blogId);
-      if (!blogRemoved) {
-        throw new NotFoundException();
-      }
+      return foundBlog;
     } else {
       throw new NotFoundException();
     }

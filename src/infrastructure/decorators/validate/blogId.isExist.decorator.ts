@@ -6,7 +6,7 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
-import { BlogsService } from '../../../features/public/blogs/application/blogs.service';
+import { BlogsRepository } from '../../../features/super-admin/blogs/infrastructure/blogs.repository';
 
 export function BlogIdIsExist(
   property?: string,
@@ -26,9 +26,9 @@ export function BlogIdIsExist(
 @ValidatorConstraint({ name: 'BlogIdIsExist', async: false })
 @Injectable()
 export class BlogIdIsExistConstraint implements ValidatorConstraintInterface {
-  constructor(private readonly blogService: BlogsService) {}
+  constructor(private readonly blogsRepository: BlogsRepository) {}
   async validate(blogId: string) {
-    const foundBlogId = await this.blogService.findBlogById(blogId);
+    const foundBlogId = await this.blogsRepository.findBlogById(blogId);
     return !!foundBlogId;
   }
 

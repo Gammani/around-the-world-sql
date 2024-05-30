@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Post, PostDocument } from '../domain/posts.entity';
 import { Model } from 'mongoose';
@@ -12,13 +12,16 @@ import {
   PostsWithPaginationViewModel,
   PostViewModel,
 } from '../api/models/output/post.output.model';
-import { LikeStatus } from '../../../types';
+import { LikeStatus, PostLikeViewDbType, PostViewDbType } from '../../../types';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class PostsQueryRepository {
   constructor(
     @InjectModel(Post.name) private PostModel: Model<PostDocument>,
     @InjectModel(PostLike.name) private PostLikeModel: Model<PostLikeDocument>,
+    @InjectDataSource() private dataSource: DataSource,
   ) {}
 
   async findPosts(
@@ -33,36 +36,56 @@ export class PostsQueryRepository {
       ? 1
       : Number(pageNumberQuery);
     const pageSize = isNaN(Number(pageSizeQuery)) ? 10 : Number(pageSizeQuery);
-    const sortBy = sortByQuery ? sortByQuery : 'createdAt';
-    const sortDirection = sortDirectionQuery === 'asc' ? 1 : -1;
+    const validSortFields = [
+      'id',
+      'title',
+      'shortDescription',
+      'content',
+      'blogId',
+      'blogName',
+      'createdAt',
+    ];
+    const sortBy =
+      sortByQuery && validSortFields.includes(sortByQuery)
+        ? `"${sortByQuery}"`
+        : `"createdAt"`;
+    const sortDirection = sortDirectionQuery === 'asc' ? 'asc' : 'desc';
 
-    const skipPages: number = (pageNumber - 1) * pageSize;
-
-    // const totalCount = await PostModel.find({}).count({})
-    // const pageCount = Math.ceil(totalCount / pageSize)
+    const offset = (pageNumber - 1) * pageSize;
     let totalCount;
     let pageCount;
 
-    let items: PostDocument[];
+    let items: PostViewDbType[];
 
     if (blogId) {
-      totalCount = await this.PostModel.find({
-        blogId: new ObjectId(blogId),
-      }).countDocuments({});
-      pageCount = Math.ceil(totalCount / pageSize);
-      items = await this.PostModel.find({ blogId: new ObjectId(blogId) })
-        .sort({ [sortBy]: sortDirection })
-        .skip(skipPages)
-        .limit(pageSize);
+      totalCount = await this.dataSource.query(
+        `SELECT id, title, "shortDescription", content, "blogId", "blogName", "createdAt"
+FROM public."Posts"
+WHERE "blogId" = $1`,
+        [blogId],
+      );
+      pageCount = Math.ceil(totalCount.length / pageSize);
+      items = await this.dataSource.query(
+        `SELECT id, title, "shortDescription", content, "blogId", "blogName", "createdAt"
+FROM public."Posts"
+WHERE "blogId" = $1
+ORDER BY ${sortBy} ${sortDirection}
+  LIMIT $2 OFFSET $3`,
+        [blogId, pageSize, offset],
+      );
     } else {
-      totalCount = await this.PostModel.find({}).countDocuments({});
-      pageCount = Math.ceil(totalCount / pageSize);
-      items = await this.PostModel.find({})
-        .sort({ [sortBy]: sortDirection })
-        .skip(skipPages)
-        .limit(pageSize);
+      totalCount = await this.dataSource
+        .query(`SELECT id, title, "shortDescription", content, "blogId", "blogName", "createdAt"
+FROM public."Posts"`);
+      pageCount = Math.ceil(totalCount.length / pageSize);
+      items = await this.dataSource.query(
+        `SELECT id, title, "shortDescription", content, "blogId", "blogName", "createdAt"
+      FROM public."Posts"
+      ORDER BY ${sortBy} ${sortDirection}
+        LIMIT $1 OFFSET $2`,
+        [pageSize, offset],
+      );
     }
-
     const result = await Promise.all(
       items.map((item) => this.getExtendedLikesInfo(item, userId)),
     );
@@ -74,7 +97,7 @@ export class PostsQueryRepository {
       pagesCount: pageCount,
       page: pageNumber,
       pageSize: pageSize,
-      totalCount: totalCount,
+      totalCount: totalCount.length,
       items: filteredResult.map((r) => ({
         id: r.id.toString(),
         title: r.title,
@@ -94,54 +117,59 @@ export class PostsQueryRepository {
   }
 
   async getExtendedLikesInfo(
-    post: PostDocument,
+    post: PostViewDbType,
     userId?: ObjectId | string | null | undefined,
   ): Promise<customFilteredPostLikesType | undefined> {
     try {
-      let myStatus: PostLikeDocument | null = null;
+      let myStatus: PostLikeViewDbType | null = null;
 
       if (userId) {
-        myStatus = await this.PostLikeModel.findOne({
-          postId: post._id,
-          userId,
-        });
+        myStatus = await this.dataSource.query(
+          `SELECT id, "userId", "blogId", "postId", login, "likeStatus", "addedAt", "lastUpdate"
+FROM public."PostLike"
+WHERE "postId"=$1 AND "userId"=$2`,
+          [post.id, userId],
+        );
       }
 
-      const newestLikes = await this.PostLikeModel.find({
-        postId: post._id,
-        likeStatus: LikeStatus.Like,
-      })
-        .sort({ createdAt: -1, _id: -1 })
-        .limit(3);
-      const likesCount = await this.PostLikeModel.find({
-        postId: post._id,
-        likeStatus: LikeStatus.Like,
-      }).countDocuments({});
-      const dislikesCount = await this.PostLikeModel.find({
-        postId: post._id,
-        likeStatus: LikeStatus.Dislike,
-      })
-        .countDocuments({})
-        .exec();
+      const newestLikes: PostLikeViewDbType[] = await this.dataSource.query(
+        `SELECT id, "userId", "blogId", "postId", login, "likeStatus", "addedAt", "lastUpdate"
+FROM public."PostLike"
+WHERE "postId" = $1 AND "likeStatus" = $2
+ORDER BY "addedAt" DESC, id DESC
+LIMIT 3;`,
+        [post.id, LikeStatus.Like],
+      );
+      const likes: PostLikeViewDbType[] = await this.dataSource.query(
+        `SELECT id, "userId", "blogId", "postId", login, "likeStatus", "addedAt", "lastUpdate"
+FROM public."PostLike"
+WHERE "postId" = $1 AND "likeStatus" = $2`,
+        [post.id, LikeStatus.Like],
+      );
+      const likesCount = likes.length;
 
-      // .countDocuments
-      // const likesCount = await PostLikeModel.countDocuments({ postId: post._id, likeStatus: LikeStatus.Like }).exec()
-      // const dislikesCount = await PostLikeModel.countDocuments({ postId: post._id, likeStatus: LikeStatus.Dislike }).exec()
+      const dislikes: PostLikeViewDbType[] = await this.dataSource.query(
+        `SELECT id, "userId", "blogId", "postId", login, "likeStatus", "addedAt", "lastUpdate"
+FROM public."PostLike"
+WHERE "postId" = $1 AND "likeStatus" = $2`,
+        [post.id, LikeStatus.Dislike],
+      );
+      const dislikesCount = dislikes.length;
 
-      const newestLikesInfo = newestLikes.map((nl: PostLikeDocument) => ({
-        addedAt: nl.addedAt.toString(),
+      const newestLikesInfo = newestLikes.map((nl: PostLikeViewDbType) => ({
+        addedAt: nl.addedAt.toISOString(),
         userId: nl.userId.toString(),
         login: nl.login,
       }));
 
       return {
-        id: post._id.toString(),
+        id: post.id,
         title: post.title,
         shortDescription: post.shortDescription,
         content: post.content,
         blogId: post.blogId.toString(),
         blogName: post.blogName,
-        createdAt: post.createdAt,
+        createdAt: post.createdAt.toString(),
         extendedLikesInfo: {
           likesCount: likesCount,
           dislikesCount: dislikesCount,
@@ -155,50 +183,25 @@ export class PostsQueryRepository {
   }
 
   async findPostById(
-    postId: string,
+    post: PostViewDbType,
     userId?: ObjectId | string | null | undefined,
   ): Promise<PostViewModel | null> {
-    if (!ObjectId.isValid(postId)) {
-      throw new NotFoundException();
-    }
-    const foundPost = await this.PostModel.findById(postId);
-    if (foundPost) {
-      const likesCount = await this.PostLikeModel.find({
-        postId: new ObjectId(postId),
-        likeStatus: LikeStatus.Like,
-      }).countDocuments({});
-      const dislikesCount = await this.PostLikeModel.find({
-        postId: new ObjectId(postId),
-        likeStatus: LikeStatus.Dislike,
-      }).countDocuments({});
-      const myStatus = await this.PostLikeModel.findOne({
-        postId: new ObjectId(postId),
-        userId,
-      });
-      const newestLikes = await this.PostLikeModel.find({
-        postId: new ObjectId(postId),
-        likeStatus: LikeStatus.Like,
-      })
-        .sort({ createdAt: -1, _id: -1 })
-        .limit(3);
-
+    const postViewModel: customFilteredPostLikesType | undefined =
+      await this.getExtendedLikesInfo(post, userId);
+    if (postViewModel) {
       return {
-        id: foundPost._id.toString(),
-        title: foundPost.title,
-        shortDescription: foundPost.shortDescription,
-        content: foundPost.content,
-        blogId: foundPost.blogId.toString(),
-        blogName: foundPost.blogName,
-        createdAt: foundPost.createdAt,
+        id: postViewModel.id,
+        title: postViewModel.title,
+        shortDescription: postViewModel.shortDescription,
+        content: postViewModel.content,
+        blogId: postViewModel.blogId,
+        blogName: postViewModel.blogName,
+        createdAt: postViewModel.createdAt.toString(),
         extendedLikesInfo: {
-          likesCount: likesCount,
-          dislikesCount: dislikesCount,
-          myStatus: myStatus ? myStatus.likeStatus : LikeStatus.None,
-          newestLikes: newestLikes.map((nl) => ({
-            addedAt: nl.addedAt.toString(),
-            userId: nl.userId.toString(),
-            login: nl.login,
-          })),
+          likesCount: postViewModel.extendedLikesInfo.likesCount,
+          dislikesCount: postViewModel.extendedLikesInfo.dislikesCount,
+          myStatus: postViewModel.extendedLikesInfo.myStatus,
+          newestLikes: postViewModel.extendedLikesInfo.newestLikes,
         },
       };
     } else {
