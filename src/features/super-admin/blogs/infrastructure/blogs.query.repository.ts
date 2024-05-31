@@ -57,7 +57,7 @@ WHERE LOWER(name) ILIKE '%${searchNameTerm}%'`,
       `SELECT id, name, description, "websiteUrl", "createdAt", "isMembership"
 FROM public."Blogs"
 WHERE LOWER(name) ILIKE '%${searchNameTerm}%' 
-ORDER BY ${sortBy} ${sortDirection}
+ORDER BY CASE WHEN name = UPPER(name) THEN 0 ELSE 1 END, ${sortBy} ${sortDirection}
   LIMIT $1 OFFSET $2`,
       [pageSize, offset],
     );
@@ -74,7 +74,7 @@ ORDER BY ${sortBy} ${sortDirection}
         name: i.name,
         description: i.description,
         websiteUrl: i.websiteUrl,
-        createdAt: i.createdAt,
+        createdAt: i.createdAt.toISOString(),
         isMembership: i.isMembership,
       })),
     };

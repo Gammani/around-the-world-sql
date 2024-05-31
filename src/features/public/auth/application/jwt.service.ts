@@ -16,7 +16,7 @@ export class JwtService {
       { deviceId },
       this.configService.get('JWT_ACCESS_SECRET') as Secret,
       {
-        expiresIn: 10,
+        expiresIn: 10000,
       },
     );
   }
@@ -25,7 +25,7 @@ export class JwtService {
       { deviceId },
       this.configService.get('JWT_REFRESH_SECRET') as Secret,
       {
-        expiresIn: 20,
+        expiresIn: 20000,
       },
     );
   }

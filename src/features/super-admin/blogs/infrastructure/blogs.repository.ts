@@ -33,7 +33,7 @@ export class BlogsRepository {
       description: createdBlogDto.description,
       websiteUrl: createdBlogDto.websiteUrl,
       createdAt: new Date(),
-      isMembership: true,
+      isMembership: false,
     };
     await this.dataSource.query(
       `INSERT INTO public."Blogs"(
@@ -53,7 +53,7 @@ VALUES ($1, $2, $3, $4, $5, $6);`,
       name: newBlog.name,
       description: newBlog.description,
       websiteUrl: newBlog.websiteUrl,
-      createdAt: newBlog.createdAt.toString(),
+      createdAt: newBlog.createdAt.toISOString(),
       isMembership: newBlog.isMembership,
     };
   }

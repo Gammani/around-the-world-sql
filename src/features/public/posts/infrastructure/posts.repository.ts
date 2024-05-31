@@ -69,7 +69,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7);`,
       content: createdPostDto.content,
       blogId: createdPostDto.blogId,
       blogName: createdPostDto.blogName,
-      createdAt: createdPostDto.createdAt.toString(),
+      createdAt: createdPostDto.createdAt.toISOString(),
       extendedLikesInfo: {
         likesCount: 0,
         dislikesCount: 0,

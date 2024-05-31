@@ -38,7 +38,11 @@ import { GetPostByIdCommand } from '../../../public/posts/application/use-cases/
 import { UpdatePostByAdminCommand } from '../../../public/posts/application/use-cases/updatePostByAdmin.useCase';
 import { DeletePostByAdminCommand } from '../../../public/posts/application/use-cases/deletePostByAdmin.useCase';
 import { RemoveBlogByAdminCommand } from '../application/use-cases/removeBlogByAdmin.useCase';
+import { GetQueryBlogByIdCommand } from '../../../public/blogs/application/use-cases/getQueryBlogById.useCase';
+import { BlogWithPaginationViewModel } from '../../../public/blogs/api/models/output/blog.output.model';
+import { GetAllQueryBlogsCommand } from '../../../public/blogs/application/use-cases/getAllQueryBlogs.useCase';
 
+@UseGuards(BasicAuthGuard)
 @Controller('sa/blogs')
 export class BlogsController {
   constructor(
@@ -48,6 +52,43 @@ export class BlogsController {
     private readonly postsService: PostsService,
     private commandBus: CommandBus,
   ) {}
+
+  @Get()
+  async getAllBlogs(
+    @Query()
+    query: {
+      searchNameTerm: string | undefined;
+      sortBy: string | undefined;
+      sortDirection: string | undefined;
+      pageNumber: string | undefined;
+      pageSize: string | undefined;
+    },
+  ) {
+    const foundBlogs: BlogWithPaginationViewModel =
+      await this.commandBus.execute(
+        new GetAllQueryBlogsCommand(
+          query.searchNameTerm,
+          query.sortBy,
+          query.sortDirection,
+          query.pageNumber,
+          query.pageSize,
+        ),
+      );
+    return foundBlogs;
+  }
+
+  @UseGuards(BasicAuthGuard)
+  @Get(':id')
+  async findBlogById(@Param('id') blogId: string) {
+    const foundBlog = await this.commandBus.execute(
+      new GetQueryBlogByIdCommand(blogId),
+    );
+    if (foundBlog) {
+      return foundBlog;
+    } else {
+      throw new NotFoundException();
+    }
+  }
 
   @UseGuards(BasicAuthGuard)
   @Get(':blogId/posts')
@@ -140,13 +181,20 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @Body() inputPostModel: UpdateInputPostModelType,
   ) {
-    const foundPost: PostViewDbType | null = await this.commandBus.execute(
-      new GetPostByIdCommand(postId),
+    const foundBlog: BlogViewDbType | null = await this.commandBus.execute(
+      new GetBlogByIdCommand(blogId),
     );
-    if (foundPost) {
-      await this.commandBus.execute(
-        new UpdatePostByAdminCommand(postId, blogId, inputPostModel),
+    if (foundBlog) {
+      const foundPost: PostViewDbType | null = await this.commandBus.execute(
+        new GetPostByIdCommand(postId),
       );
+      if (foundPost) {
+        await this.commandBus.execute(
+          new UpdatePostByAdminCommand(postId, blogId, inputPostModel),
+        );
+      } else {
+        throw new NotFoundException();
+      }
     } else {
       throw new NotFoundException();
     }
@@ -169,12 +217,22 @@ export class BlogsController {
   @UseGuards(BasicAuthGuard)
   @Delete(':blogId/posts/:id')
   @HttpCode(204)
-  async removePostByAdmin(@Param('id') postId: string) {
-    const foundPost = await this.commandBus.execute(
-      new GetPostByIdCommand(postId),
+  async removePostByAdmin(
+    @Param('id') postId: string,
+    @Param('blogId') blogId: string,
+  ) {
+    const foundBlog: BlogViewDbType | null = await this.commandBus.execute(
+      new GetBlogByIdCommand(blogId),
     );
-    if (foundPost) {
-      await this.commandBus.execute(new DeletePostByAdminCommand(postId));
+    if (foundBlog) {
+      const foundPost = await this.commandBus.execute(
+        new GetPostByIdCommand(postId),
+      );
+      if (foundPost) {
+        await this.commandBus.execute(new DeletePostByAdminCommand(postId));
+      } else {
+        throw new NotFoundException();
+      }
     } else {
       throw new NotFoundException();
     }
