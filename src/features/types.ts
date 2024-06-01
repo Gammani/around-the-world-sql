@@ -84,7 +84,7 @@ export type DeviceDbViewModelType = {
   lastActiveDate: string;
 };
 export type TokenPayloadType = {
-  deviceId: ObjectId;
+  deviceId: string;
   iat?: string;
   exp?: string;
 };
@@ -154,6 +154,24 @@ export type CommentDbType = {
   _blogId: ObjectId;
   likesInfo: CommentatorLikesInfoType;
 };
+export type CommentViewDbModelType = {
+  id: string;
+  content: string;
+  commentatorInfo: CommentatorInfoType;
+  createdAt: Date;
+  userId: string;
+  postId: string;
+  blogId: string;
+};
+export type CommentViewSqlDbModelType = {
+  id: string;
+  content: string;
+  userLogin: string;
+  createdAt: Date;
+  userId: string;
+  postId: string;
+  blogId: string;
+};
 
 export type PostLikeDbType = {
   _id: ObjectId;
@@ -175,6 +193,15 @@ export type PostLikeViewDbType = {
   addedAt: Date;
   lastUpdate: string;
 };
+export type CreatedPostLikeDtoType = {
+  id: string;
+  userId: string;
+  login: string;
+  post: PostViewDbType;
+  likeStatus: LikeStatus;
+  addedAt: Date;
+  lastUpdate: Date;
+};
 export type CommentLikeDbType = {
   _id: ObjectId;
   userId: ObjectId;
@@ -185,6 +212,17 @@ export type CommentLikeDbType = {
   likeStatus: LikeStatus;
   addedAt: string;
   lastUpdate: string;
+};
+export type CommentLikeViewDbType = {
+  id: string;
+  userId: string;
+  login: string;
+  blogId: string;
+  postId: string;
+  commentId: string;
+  likeStatus: LikeStatus;
+  addedAt: Date;
+  lastUpdate: Date;
 };
 export type CreatedDeviceDtoModelType = {
   userId: string;

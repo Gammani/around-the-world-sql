@@ -6,7 +6,6 @@ import {
   PostLike,
   PostLikeDocument,
 } from '../../postLike/domain/postLike.entity';
-import { ObjectId } from 'mongodb';
 import {
   customFilteredPostLikesType,
   PostsWithPaginationViewModel,
@@ -29,7 +28,7 @@ export class PostsQueryRepository {
     pageSizeQuery: string | undefined,
     sortByQuery: string | undefined,
     sortDirectionQuery: string | undefined,
-    userId?: ObjectId | string | null | undefined,
+    userId?: string | null | undefined,
     blogId?: string,
   ): Promise<PostsWithPaginationViewModel> {
     const pageNumber = isNaN(Number(pageNumberQuery))
@@ -118,7 +117,7 @@ FROM public."Posts"`);
 
   async getExtendedLikesInfo(
     post: PostViewDbType,
-    userId?: ObjectId | string | null | undefined,
+    userId?: string | null | undefined,
   ): Promise<customFilteredPostLikesType | undefined> {
     try {
       let myStatus: PostLikeViewDbType | null = null;
@@ -184,7 +183,7 @@ WHERE "postId" = $1 AND "likeStatus" = $2`,
 
   async findPostById(
     post: PostViewDbType,
-    userId?: ObjectId | string | null | undefined,
+    userId?: string | null | undefined,
   ): Promise<PostViewModel | null> {
     const postViewModel: customFilteredPostLikesType | undefined =
       await this.getExtendedLikesInfo(post, userId);

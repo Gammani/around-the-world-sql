@@ -1,12 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ObjectId } from 'mongodb';
 import { PostLikeRepository } from '../../infrastructure/postLike.repository';
-import { PostLikeDbType } from '../../../../types';
+import { PostLikeViewDbType } from '../../../../types';
 
 export class GetPostLikeFromUserCommand {
   constructor(
-    public postId: ObjectId,
-    public userId: ObjectId,
+    public postId: string,
+    public userId: string,
   ) {}
 }
 
@@ -18,7 +17,7 @@ export class GetPostLikeFromUserUseCase
 
   async execute(
     command: GetPostLikeFromUserCommand,
-  ): Promise<PostLikeDbType | null> {
+  ): Promise<PostLikeViewDbType | null> {
     const result = await this.postLikeRepository.findPostLike(
       command.postId,
       command.userId,

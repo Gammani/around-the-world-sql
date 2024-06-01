@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   Post,
@@ -6,7 +6,6 @@ import {
   PostModelWithUriBlogIdStaticType,
 } from '../domain/posts.entity';
 import { Model } from 'mongoose';
-import { ObjectId } from 'mongodb';
 import { PostViewModel } from '../api/models/output/post.output.model';
 import {
   CreatedPostDtoType,

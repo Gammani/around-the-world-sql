@@ -23,7 +23,6 @@ import {
   RequestWithDeviceId,
   RequestWithUserId,
 } from '../../auth/api/models/input/auth.input.model';
-import { ObjectId } from 'mongodb';
 import { CommentsWithPaginationViewModel } from '../../comments/api/models/output/comment-output.model';
 import { CommentInputModel } from './models/input/comment.input.model';
 import { CommentsService } from '../../comments/application/comments.service';
@@ -38,7 +37,11 @@ import { CreateCommentCommand } from '../../comments/application/use-cases/Creat
 import { GetQueryPostByIdCommand } from '../application/use-cases/getQueryPostById.useCase';
 import { CheckAccessToken } from '../../auth/guards/jwt-accessToken.guard';
 import { UsersService } from '../../../super-admin/users/application/users.service';
-import { PostDbType, PostLikeDbType, UserDbType } from '../../../types';
+import {
+  PostLikeViewDbType,
+  PostViewDbType,
+  UserDbViewModelType,
+} from '../../../types';
 import { GetUserByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserByDeviceId.useCase';
 import { BlogsService } from '../../../super-admin/blogs/application/blogs.service';
 
@@ -63,17 +66,18 @@ export class PostsController {
     @Param('postId') postId: string,
     @Req() req: Request & RequestWithDeviceId,
   ) {
-    const foundPost: PostDbType | null = await this.commandBus.execute(
+    const foundPost: PostViewDbType | null = await this.commandBus.execute(
       new GetPostByIdCommand(postId),
     );
     if (foundPost) {
-      const foundUser: UserDbType | null = await this.commandBus.execute(
-        new GetUserByDeviceIdCommand(req.deviceId),
-      );
+      const foundUser: UserDbViewModelType | null =
+        await this.commandBus.execute(
+          new GetUserByDeviceIdCommand(req.deviceId),
+        );
       if (foundUser) {
-        const foundPostLikeFromUser: PostLikeDbType | null =
+        const foundPostLikeFromUser: PostLikeViewDbType | null =
           await this.commandBus.execute(
-            new GetPostLikeFromUserCommand(new ObjectId(postId), foundUser._id),
+            new GetPostLikeFromUserCommand(postId, foundUser.id),
           );
         if (foundPostLikeFromUser) {
           await this.commandBus.execute(
@@ -109,7 +113,7 @@ export class PostsController {
       sortDirection: string | undefined;
     },
   ) {
-    const foundPost: PostDbType | null = await this.commandBus.execute(
+    const foundPost: PostViewDbType | null = await this.commandBus.execute(
       new GetPostByIdCommand(postId),
     );
     if (foundPost) {
@@ -161,11 +165,11 @@ export class PostsController {
     @Param('postId') postId: string,
     @Req() req: Request & RequestWithDeviceId,
   ) {
-    const foundPost: PostDbType | null = await this.commandBus.execute(
+    const foundPost: PostViewDbType | null = await this.commandBus.execute(
       new GetPostByIdCommand(postId),
     );
     if (foundPost) {
-      const foundUser: UserDbType = await this.commandBus.execute(
+      const foundUser: UserDbViewModelType = await this.commandBus.execute(
         new GetUserByDeviceIdCommand(req.deviceId),
       );
       if (foundUser) {
@@ -185,7 +189,7 @@ export class PostsController {
     @Param('id') postId: string,
     @Req() req: Request & RequestWithUserId,
   ) {
-    const foundPost = await this.commandBus.execute(
+    const foundPost: PostViewDbType | null = await this.commandBus.execute(
       new GetPostByIdCommand(postId),
     );
     if (foundPost) {

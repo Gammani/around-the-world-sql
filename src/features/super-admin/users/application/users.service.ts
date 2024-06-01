@@ -19,12 +19,12 @@ export class UsersService {
   ) {}
 
   async findUserByDeviceId(
-    deviceId: ObjectId | string,
+    deviceId: string,
   ): Promise<UserDbViewModelType | null> {
     const userId =
       await this.securityDevicesService.findUserIdByDeviceId(deviceId);
     if (userId) {
-      return await this.usersRepository.findUserById(userId.toString());
+      return await this.usersRepository.findUserById(userId);
     } else {
       return null;
     }

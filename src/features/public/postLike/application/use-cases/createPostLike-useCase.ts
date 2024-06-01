@@ -7,12 +7,18 @@ import {
 } from '../../domain/postLike.entity';
 import { Model } from 'mongoose';
 import { PostLikeRepository } from '../../infrastructure/postLike.repository';
-import { LikeStatus, PostDbType, UserDbType } from '../../../../types';
+import {
+  CreatedPostLikeDtoType,
+  LikeStatus,
+  PostViewDbType,
+  UserDbViewModelType,
+} from '../../../../types';
+import { v1 as uuidv1 } from 'uuid';
 
 export class CreatePostLikeCommand {
   constructor(
-    public user: UserDbType,
-    public post: PostDbType,
+    public user: UserDbViewModelType,
+    public post: PostViewDbType,
     public likeStatus: LikeStatus,
   ) {}
 }
@@ -28,13 +34,15 @@ export class CreatePostLikeUseCase
   ) {}
 
   async execute(command: CreatePostLikeCommand) {
-    const createPostLike = this.PostLikeModel.createPostLike(
-      command.user._id,
-      command.user.accountData.login,
-      command.post,
-      command.likeStatus,
-      this.PostLikeModel,
-    );
-    return await this.postLikeRepository.createPostLike(createPostLike);
+    const createdPostLike: CreatedPostLikeDtoType = {
+      id: uuidv1(),
+      userId: command.user.id,
+      login: command.user.accountData.login,
+      post: command.post,
+      likeStatus: command.likeStatus,
+      addedAt: new Date(),
+      lastUpdate: new Date(),
+    };
+    return await this.postLikeRepository.createPostLike(createdPostLike);
   }
 }

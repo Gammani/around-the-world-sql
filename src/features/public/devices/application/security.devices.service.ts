@@ -16,9 +16,7 @@ export class SecurityDevicesService {
     @InjectModel(Device.name)
     private DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
   ) {}
-  async findUserIdByDeviceId(
-    deviceId: ObjectId | string,
-  ): Promise<string | null> {
+  async findUserIdByDeviceId(deviceId: string): Promise<string | null> {
     return this.devicesRepository.findUserIdByDeviceId(deviceId);
   }
 }

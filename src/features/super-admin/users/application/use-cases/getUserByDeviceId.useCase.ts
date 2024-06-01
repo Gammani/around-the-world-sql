@@ -1,11 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ObjectId } from 'mongodb';
 import { UsersRepository } from '../../infrastructure/users.repository';
 import { UserDbViewModelType } from '../../../../types';
 import { DeviceRepository } from '../../../../public/devices/infrastructure/device.repository';
 
 export class GetUserByDeviceIdCommand {
-  constructor(public deviceId: ObjectId | string) {}
+  constructor(public deviceId: string) {}
 }
 
 @CommandHandler(GetUserByDeviceIdCommand)
@@ -24,7 +23,7 @@ export class GetUserByDeviceIdUseCase
       command.deviceId,
     );
     if (userId) {
-      return await this.usersRepository.findUserById(userId.toString());
+      return await this.usersRepository.findUserById(userId);
     } else {
       return null;
     }

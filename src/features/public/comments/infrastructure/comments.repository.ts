@@ -9,10 +9,15 @@ import { Model } from 'mongoose';
 import { CommentViewModel } from '../api/models/output/comment-output.model';
 import { ObjectId } from 'mongodb';
 import { CommentDbType, LikeStatus } from '../../../types';
+import { CreatedCommentDtoType } from '../api/models/input/comment.input.model';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class CommentsRepository {
   constructor(
+    @InjectDataSource()
+    private dataSource: DataSource,
     @InjectModel(Comment.name)
     private CommentModel: Model<CommentDocument> & CommentModelStaticType,
   ) {}
@@ -31,17 +36,31 @@ export class CommentsRepository {
     }
   }
 
-  async createComment(createdCommentDto: any): Promise<CommentViewModel> {
-    const newComment = await createdCommentDto.save();
-    console.log(newComment);
+  async createComment(
+    createdCommentDto: CreatedCommentDtoType,
+  ): Promise<CommentViewModel> {
+    await this.dataSource.query(
+      `INSERT INTO public."Comments"(
+id, content, "createdAt", "userId", "postId", "blogId")
+VALUES ($1, $2, $3, $4, $5, $6)`,
+      [
+        createdCommentDto.id,
+        createdCommentDto.content,
+        createdCommentDto.createdAt,
+        createdCommentDto.userId,
+        createdCommentDto.postId,
+        createdCommentDto.blogId,
+      ],
+    );
+    console.log(createdCommentDto);
     return {
-      id: newComment._id.toString(),
-      content: newComment.content,
+      id: createdCommentDto.id,
+      content: createdCommentDto.content,
       commentatorInfo: {
-        userId: newComment.commentatorInfo.userId.toString(),
-        userLogin: newComment.commentatorInfo.userLogin,
+        userId: createdCommentDto.userId,
+        userLogin: createdCommentDto.userLogin,
       },
-      createdAt: newComment.createdAt,
+      createdAt: createdCommentDto.createdAt.toISOString(),
       likesInfo: {
         likesCount: 0,
         dislikesCount: 0,

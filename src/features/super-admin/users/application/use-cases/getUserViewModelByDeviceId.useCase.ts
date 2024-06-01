@@ -1,10 +1,9 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { ObjectId } from 'mongodb';
 import { UsersQueryRepository } from '../../infrastructure/users.query.repository';
 import { DeviceRepository } from '../../../../public/devices/infrastructure/device.repository';
 
 export class GetUserViewModelByDeviceIdCommand {
-  constructor(public deviceId: ObjectId | string) {}
+  constructor(public deviceId: string) {}
 }
 
 @CommandHandler(GetUserViewModelByDeviceIdCommand)
