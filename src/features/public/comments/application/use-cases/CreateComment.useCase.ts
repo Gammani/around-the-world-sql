@@ -9,14 +9,14 @@ import {
 } from '../../domain/comments.entity';
 import { Model } from 'mongoose';
 import { CommentsRepository } from '../../infrastructure/comments.repository';
-import { PostViewDbType, UserDbViewModelType } from '../../../../types';
+import { PostViewDbType, UserViewDbModelType } from '../../../../types';
 import { CreatedCommentDtoType } from '../../api/models/input/comment.input.model';
 import { v1 as uuidv1 } from 'uuid';
 
 export class CreateCommentCommand {
   constructor(
     public inputCommentModel: CommentInputModel,
-    public user: UserDbViewModelType,
+    public user: UserViewDbModelType,
     public post: PostViewDbType,
   ) {}
 }

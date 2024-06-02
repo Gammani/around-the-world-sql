@@ -59,7 +59,7 @@ VALUES ($1, $2, $3, $4, $5);`,
   //   return this.DeviceModel.findOne({ _id: deviceId });
   // }
   async findUserIdByDeviceId(deviceId: string): Promise<string | null> {
-    if (validateUUID(deviceId.toString())) {
+    if (validateUUID(deviceId)) {
       const foundDevice: DeviceSqlDbType[] = await this.dataSource.query(
         `SELECT id, ip, "deviceName", "lastActiveDate", "userId"
 FROM public."Device"

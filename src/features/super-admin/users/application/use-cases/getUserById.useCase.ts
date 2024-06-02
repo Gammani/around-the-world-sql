@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../../infrastructure/users.repository';
-import { UserDbViewModelType } from '../../../../types';
+import { UserViewDbModelType } from '../../../../types';
 
 export class GetUserByIdCommand {
   constructor(public userId: string) {}
@@ -12,7 +12,7 @@ export class GetUserByIdUseCase implements ICommandHandler<GetUserByIdCommand> {
 
   async execute(
     command: GetUserByIdCommand,
-  ): Promise<UserDbViewModelType | null> {
+  ): Promise<UserViewDbModelType | null> {
     return this.usersRepository.findUserById(command.userId);
   }
 }

@@ -32,7 +32,13 @@ import { UpdateCommentLikeCommand } from '../../commentLike/appliacation/use-cas
 import { CreateCommentLikeCommand } from '../../commentLike/appliacation/use-cases/createCommentLike.useCase';
 import { CheckAccessToken } from '../../auth/guards/jwt-accessToken.guard';
 import { UsersService } from '../../../super-admin/users/application/users.service';
-import { CommentDbType, CommentLikeDbType, UserDbType } from '../../../types';
+import {
+  CommentDbType,
+  CommentLikeViewDbType,
+  CommentViewDbType,
+  UserDbType,
+  UserViewDbModelType,
+} from '../../../types';
 import { GetUserByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserByDeviceId.useCase';
 
 @Controller('comments')
@@ -50,18 +56,16 @@ export class CommentsController {
     @Param('id') commentId: string,
     @Req() req: Request & RequestWithUserId,
   ) {
-    debugger;
-    const foundComment: CommentDbType | null = await this.commandBus.execute(
-      new GetCommentByIdCommand(commentId),
-    );
+    const foundComment: CommentViewDbType | null =
+      await this.commandBus.execute(new GetCommentByIdCommand(commentId));
     if (foundComment) {
       if (req.user?.userId) {
         return await this.commandBus.execute(
-          new GetQueryCommentByIdCommand(commentId, req.user?.userId),
+          new GetQueryCommentByIdCommand(foundComment, req.user?.userId),
         );
       } else {
         return await this.commandBus.execute(
-          new GetQueryCommentByIdCommand(commentId),
+          new GetQueryCommentByIdCommand(foundComment),
         );
       }
     } else {
@@ -77,18 +81,18 @@ export class CommentsController {
     @Param('commentId') commentId: string,
     @Req() req: Request & RequestWithDeviceId,
   ) {
-    const foundComment: CommentDbType | null = await this.commandBus.execute(
-      new GetCommentByIdCommand(commentId),
-    );
+    const foundComment: CommentViewDbType | null =
+      await this.commandBus.execute(new GetCommentByIdCommand(commentId));
 
     if (foundComment) {
-      const foundUser: UserDbType | null = await this.commandBus.execute(
-        new GetUserByDeviceIdCommand(req.deviceId),
-      );
+      const foundUser: UserViewDbModelType | null =
+        await this.commandBus.execute(
+          new GetUserByDeviceIdCommand(req.deviceId),
+        );
       if (
         foundUser &&
         foundComment.commentatorInfo.userId.toString() ===
-          foundUser._id.toString()
+          foundUser.id.toString()
       ) {
         await this.commandBus.execute(
           new UpdateCommentCommand(commentId, inputCommentModel.content),
@@ -108,16 +112,16 @@ export class CommentsController {
     @Param('commentId') commentId: string,
     @Req() req: Request & RequestWithDeviceId,
   ) {
-    const foundComment: CommentDbType | null = await this.commandBus.execute(
-      new GetCommentByIdCommand(commentId),
-    );
+    const foundComment: CommentViewDbType | null =
+      await this.commandBus.execute(new GetCommentByIdCommand(commentId));
     if (foundComment) {
-      const foundUser: UserDbType | null = await this.commandBus.execute(
-        new GetUserByDeviceIdCommand(req.deviceId),
-      );
+      const foundUser: UserViewDbModelType | null =
+        await this.commandBus.execute(
+          new GetUserByDeviceIdCommand(req.deviceId),
+        );
       if (
         foundUser &&
-        foundUser._id.toString() ===
+        foundUser.id.toString() ===
           foundComment.commentatorInfo.userId.toString()
       ) {
         await this.commandBus.execute(new DeleteCommentByIdCommand(commentId));
@@ -137,17 +141,17 @@ export class CommentsController {
     @Param('commentId') commentId: string,
     @Req() req: Request & RequestWithDeviceId,
   ) {
-    const foundComment: CommentDbType | null = await this.commandBus.execute(
-      new GetCommentByIdCommand(commentId),
-    );
+    const foundComment: CommentViewDbType | null =
+      await this.commandBus.execute(new GetCommentByIdCommand(commentId));
     if (foundComment) {
-      const foundUser: UserDbType | null = await this.commandBus.execute(
-        new GetUserByDeviceIdCommand(req.deviceId),
-      );
+      const foundUser: UserViewDbModelType | null =
+        await this.commandBus.execute(
+          new GetUserByDeviceIdCommand(req.deviceId),
+        );
       if (foundUser) {
-        const foundCommentLikeFromUser: CommentLikeDbType | null =
+        const foundCommentLikeFromUser: CommentLikeViewDbType | null =
           await this.commandBus.execute(
-            new GetCommentLikeCommand(foundComment._id, foundUser._id),
+            new GetCommentLikeCommand(foundComment.id, foundUser.id),
           );
         if (foundCommentLikeFromUser) {
           await this.commandBus.execute(
@@ -161,7 +165,7 @@ export class CommentsController {
             new CreateCommentLikeCommand(
               foundComment,
               commentLikeModel.likeStatus,
-              foundUser._id,
+              foundUser.id,
               foundUser.accountData.login,
             ),
           );

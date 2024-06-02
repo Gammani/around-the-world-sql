@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { EmailInputModel } from '../../api/models/input/email.input.model';
 import { UsersRepository } from '../../../../super-admin/users/infrastructure/users.repository';
 import { EmailManager } from '../../../../adapter/email.manager';
-import { UserDbViewModelType } from '../../../../types';
+import { UserViewDbModelType } from '../../../../types';
 import { add } from 'date-fns/add';
 
 export class RegistrationResendCodeCommand {
@@ -20,7 +20,7 @@ export class RegistrationResendCodeUseCase
   ) {}
 
   async execute(command: RegistrationResendCodeCommand) {
-    const foundUser: UserDbViewModelType | null =
+    const foundUser: UserViewDbModelType | null =
       await this.usersRepository.findUserByLoginOrEmail(
         command.emailInputModel.email,
       );

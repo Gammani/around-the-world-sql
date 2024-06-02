@@ -23,7 +23,7 @@ export type UserDbType = {
   accountData: AccountDataType;
   emailConfirmation: EmailConfirmationType;
 };
-export type UserDbViewModelType = {
+export type UserViewDbModelType = {
   id: string;
   accountData: AccountDataType;
   emailConfirmation: EmailConfirmationType;
@@ -154,6 +154,14 @@ export type CommentDbType = {
   _blogId: ObjectId;
   likesInfo: CommentatorLikesInfoType;
 };
+export type CommentViewDbType = {
+  id: string;
+  content: string;
+  createdAt: Date;
+  commentatorInfo: CommentatorInfoType;
+  postId: string;
+  blogId: string;
+};
 export type CommentViewDbModelType = {
   id: string;
   content: string;
@@ -198,6 +206,17 @@ export type CreatedPostLikeDtoType = {
   userId: string;
   login: string;
   post: PostViewDbType;
+  likeStatus: LikeStatus;
+  addedAt: Date;
+  lastUpdate: Date;
+};
+export type CreateCommentLikeDtoType = {
+  id: string;
+  userId: string;
+  login: string;
+  blogId: string;
+  postId: string;
+  commentId: string;
   likeStatus: LikeStatus;
   addedAt: Date;
   lastUpdate: Date;

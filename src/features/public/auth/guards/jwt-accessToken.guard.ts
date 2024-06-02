@@ -26,7 +26,6 @@ export class CheckAccessToken {
 
     const foundDeviceIdByAccessToken: TokenPayloadType | null =
       await this.jwtService.verifyAccessToken(accessToken);
-    console.log(foundDeviceIdByAccessToken);
     debugger;
     if (foundDeviceIdByAccessToken) {
       req.deviceId = foundDeviceIdByAccessToken.deviceId;

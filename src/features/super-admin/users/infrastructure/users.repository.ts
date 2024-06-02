@@ -5,7 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import {
   UserAccountDataSqlType,
   UserDbType,
-  UserDbViewModelType,
+  UserViewDbModelType,
   UserEmailDataSqlType,
   UserViewEmailDbType,
 } from '../../../types';
@@ -22,7 +22,7 @@ export class UsersRepository {
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  async findUserById(userId: string): Promise<UserDbViewModelType | null> {
+  async findUserById(userId: string): Promise<UserViewDbModelType | null> {
     if (validateUUID(userId)) {
       const foundUser = await this.dataSource.query(
         `SELECT account."id", account.login, account.email, account."createdAt", account."passwordHash",
@@ -87,7 +87,7 @@ WHERE "confirmationCode" = $1`,
 
   async findUserByLoginOrEmail(
     loginOrEmail: string,
-  ): Promise<UserDbViewModelType | null> {
+  ): Promise<UserViewDbModelType | null> {
     const foundUser: UserAccountDataSqlType[] = await this.dataSource.query(
       `SELECT id, login, email, "createdAt", "passwordHash", "recoveryCode"
 FROM public."UserAccountData"

@@ -27,7 +27,6 @@ export class JwtMiddleware implements NestMiddleware {
             foundDeviceIdByAccessToken.deviceId,
           ),
         };
-        console.log(req.user);
         next();
       } else {
         next();

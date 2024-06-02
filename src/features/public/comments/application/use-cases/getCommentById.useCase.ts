@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CommentsRepository } from '../../infrastructure/comments.repository';
-import { CommentDbType } from '../../../../types';
+import { CommentViewDbType } from '../../../../types';
 
 export class GetCommentByIdCommand {
   constructor(public commentId: string) {}
@@ -12,7 +12,9 @@ export class GetCommentByIdUseCase
 {
   constructor(private commentsRepository: CommentsRepository) {}
 
-  async execute(command: GetCommentByIdCommand): Promise<CommentDbType | null> {
+  async execute(
+    command: GetCommentByIdCommand,
+  ): Promise<CommentViewDbType | null> {
     return await this.commentsRepository.findCommentById(command.commentId);
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../../../super-admin/users/infrastructure/users.repository';
 import { UsersService } from '../../../super-admin/users/application/users.service';
-import { UserDbViewModelType, UserViewEmailDbType } from '../../../types';
+import { UserViewDbModelType, UserViewEmailDbType } from '../../../types';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +22,7 @@ export class AuthService {
     loginOrEmail: string,
     pass: string,
   ): Promise<string | null> {
-    const user: UserDbViewModelType | null =
+    const user: UserViewDbModelType | null =
       await this.userService.checkCredentials(loginOrEmail, pass);
     if (user) {
       return user.id;

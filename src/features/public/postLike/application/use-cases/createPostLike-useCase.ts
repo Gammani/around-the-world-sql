@@ -11,13 +11,13 @@ import {
   CreatedPostLikeDtoType,
   LikeStatus,
   PostViewDbType,
-  UserDbViewModelType,
+  UserViewDbModelType,
 } from '../../../../types';
 import { v1 as uuidv1 } from 'uuid';
 
 export class CreatePostLikeCommand {
   constructor(
-    public user: UserDbViewModelType,
+    public user: UserViewDbModelType,
     public post: PostViewDbType,
     public likeStatus: LikeStatus,
   ) {}

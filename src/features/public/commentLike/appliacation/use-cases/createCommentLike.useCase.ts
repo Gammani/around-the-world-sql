@@ -1,5 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ObjectId } from 'mongodb';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   CommentLike,
@@ -8,13 +7,18 @@ import {
 } from '../../domain/commentLike.entity';
 import { Model } from 'mongoose';
 import { CommentLikeRepository } from '../../infrastructure/commentLike.repository';
-import { CommentDbType, LikeStatus } from '../../../../types';
+import {
+  CommentViewDbType,
+  CreateCommentLikeDtoType,
+  LikeStatus,
+} from '../../../../types';
+import { v1 as uuidv1 } from 'uuid';
 
 export class CreateCommentLikeCommand {
   constructor(
-    public comment: CommentDbType,
+    public comment: CommentViewDbType,
     public likeStatus: LikeStatus,
-    public userId: ObjectId,
+    public userId: string,
     public userLogin: string,
   ) {}
 }
@@ -31,13 +35,17 @@ export class CreateCommentLikeUseCase
   ) {}
 
   async execute(command: CreateCommentLikeCommand) {
-    const createCommentPostLike = this.CommentLikeModel.createCommentLike(
-      command.userId,
-      command.userLogin,
-      command.comment,
-      command.likeStatus,
-      this.CommentLikeModel,
-    );
+    const createCommentPostLike: CreateCommentLikeDtoType = {
+      id: uuidv1(),
+      userId: command.userId,
+      login: command.userLogin,
+      blogId: command.comment.blogId,
+      postId: command.comment.postId,
+      commentId: command.comment.id,
+      likeStatus: command.likeStatus,
+      addedAt: new Date(),
+      lastUpdate: new Date(),
+    };
 
     return await this.commentLikeRepository.createCommentLike(
       createCommentPostLike,

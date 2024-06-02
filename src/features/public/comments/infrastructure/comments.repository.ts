@@ -7,11 +7,11 @@ import {
 } from '../domain/comments.entity';
 import { Model } from 'mongoose';
 import { CommentViewModel } from '../api/models/output/comment-output.model';
-import { ObjectId } from 'mongodb';
-import { CommentDbType, LikeStatus } from '../../../types';
+import { CommentViewDbType, LikeStatus } from '../../../types';
 import { CreatedCommentDtoType } from '../api/models/input/comment.input.model';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { validate as validateUUID } from 'uuid';
 
 @Injectable()
 export class CommentsRepository {
@@ -22,18 +22,33 @@ export class CommentsRepository {
     private CommentModel: Model<CommentDocument> & CommentModelStaticType,
   ) {}
 
-  async findCommentById(id: string): Promise<CommentDbType | null> {
-    if (!ObjectId.isValid(id)) {
-      return null;
+  async findCommentById(commentId: string): Promise<CommentViewDbType | null> {
+    if (validateUUID(commentId)) {
+      const foundComment = await this.dataSource.query(
+        `SELECT com.id, com.content, com."createdAt", com."userId", com."postId", com."blogId", "user".login as "userLogin"
+FROM public."Comments" as com
+LEFT JOIN public."UserAccountData" as "user" 
+ON "user".id = com."userId"
+WHERE "com"."id" = $1`,
+        [commentId],
+      );
+      if (foundComment.length > 0) {
+        return {
+          id: foundComment[0].id,
+          content: foundComment[0].content,
+          createdAt: foundComment[0].createdAt,
+          commentatorInfo: {
+            userId: foundComment[0].userId,
+            userLogin: foundComment[0].userLogin,
+          },
+          postId: foundComment[0].postId,
+          blogId: foundComment[0].blogId,
+        };
+      } else {
+        return null;
+      }
     }
-    const foundComment: CommentDbType | null = await this.CommentModel.findOne({
-      _id: id,
-    });
-    if (foundComment) {
-      return foundComment;
-    } else {
-      return null;
-    }
+    return null;
   }
 
   async createComment(
@@ -76,22 +91,27 @@ VALUES ($1, $2, $3, $4, $5, $6)`,
     return this.CommentModel.findOne({ content: content });
   }
   async updateComment(commentId: string, content: string): Promise<boolean> {
-    const result = await this.CommentModel.updateOne(
-      { _id: commentId },
-      {
-        $set: {
-          content: content,
-        },
-      },
-    );
-    return result.matchedCount === 1;
+    try {
+      await this.dataSource.query(
+        `UPDATE public."Comments"
+SET content = $1
+WHERE id = $2`,
+        [content, commentId],
+      );
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   }
-  async deleteComment(id: string): Promise<boolean> {
-    const result = await this.CommentModel.deleteOne({ _id: id });
-    return result.deletedCount === 1;
+  async deleteComment(commentId: string): Promise<boolean> {
+    return await this.dataSource.query(
+      `DELETE FROM public."Comments"
+WHERE id = $1`,
+      [commentId],
+    );
   }
   async deleteAll() {
-    await this.CommentModel.deleteMany({});
-    return;
+    return await this.dataSource.query(`DELETE FROM public."Comments"`);
   }
 }

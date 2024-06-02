@@ -15,6 +15,7 @@ import {
   CommentDbType,
   CommentLikeViewDbType,
   CommentViewDbModelType,
+  CommentViewDbType,
   CommentViewSqlDbModelType,
   LikeStatus,
 } from '../../../types';
@@ -67,6 +68,33 @@ export class CommentsQueryRepository {
     } else {
       return null;
     }
+  }
+
+  async getQueryCommentByComment(
+    comment: CommentViewDbType,
+    userId?: string,
+  ): Promise<CommentViewModel | null> {
+    const myStatus: LikeStatus | null = await this.getMyStatus(
+      comment.id,
+      userId,
+    );
+    const likesCount = await this.getLikesCount(comment.id);
+    const dislikesCount = await this.getDislikesCount(comment.id);
+
+    return {
+      id: comment.id,
+      content: comment.content,
+      commentatorInfo: {
+        userId: comment.commentatorInfo.userId,
+        userLogin: comment.commentatorInfo.userLogin,
+      },
+      createdAt: comment.createdAt.toISOString(),
+      likesInfo: {
+        likesCount: likesCount,
+        dislikesCount: dislikesCount,
+        myStatus: myStatus ? myStatus : LikeStatus.None,
+      },
+    };
   }
 
   async findComments(
@@ -194,6 +222,43 @@ WHERE "likeStatus" = $1`,
         myStatus: myStatus ? myStatus.likeStatus : LikeStatus.None,
       },
     };
+  }
+
+  async getMyStatus(
+    commentId: string,
+    userId?: string,
+  ): Promise<LikeStatus | null> {
+    if (userId) {
+      const myStatus = await this.dataSource.query(
+        `SELECT id, "userId", login, "blogId", "postId", "commentId", "likeStatus", "addedAt", "lastUpdate"
+FROM public."CommentsLikes"
+WHERE "commentId" = $1 AND "userId" = $2`,
+        [commentId, userId],
+      );
+      return myStatus[0].likeStatus;
+    } else {
+      return null;
+    }
+  }
+
+  async getLikesCount(commentId: string): Promise<number> {
+    const foundLikes = await this.dataSource.query(
+      `SELECT id, "userId", login, "blogId", "postId", "commentId", "likeStatus", "addedAt", "lastUpdate"
+FROM public."CommentsLikes"
+WHERE "commentId" = $1 AND "likeStatus" = $2`,
+      [commentId, LikeStatus.Like],
+    );
+    return foundLikes.length;
+  }
+
+  async getDislikesCount(commentId: string): Promise<number> {
+    const foundLikes = await this.dataSource.query(
+      `SELECT id, "userId", login, "blogId", "postId", "commentId", "likeStatus", "addedAt", "lastUpdate"
+FROM public."CommentsLikes"
+WHERE "commentId" = $1 AND "likeStatus" = $2`,
+      [commentId, LikeStatus.Dislike],
+    );
+    return foundLikes.length;
   }
 
   async getAllCommentViewDbModel(

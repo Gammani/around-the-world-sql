@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { HydratedDocument, Model } from 'mongoose';
-import { CommentDbType, LikeStatus } from '../../../types';
+import { CommentDbType, CommentViewDbType, LikeStatus } from '../../../types';
 
 export type CommentLikeDocument = HydratedDocument<CommentLike>;
 
@@ -75,9 +75,9 @@ CommentLikeSchema.statics.createCommentLike = (
 
 export type CommentLikeModelStaticType = {
   createCommentLike: (
-    userId: ObjectId,
+    userId: string,
     login: string,
-    comment: CommentDbType,
+    comment: CommentViewDbType,
     likeStatus: LikeStatus,
     CommentLikeModel: Model<CommentLikeDocument> & CommentLikeModelStaticType,
   ) => {

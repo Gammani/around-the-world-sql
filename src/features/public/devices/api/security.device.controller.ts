@@ -19,7 +19,7 @@ import { CheckRefreshToken } from '../../auth/guards/jwt-refreshToken.guard';
 import { GetDeviceByDeviceIdCommand } from '../application/use-cases/getDeviceByDeviceId.useCase';
 import { DeleteAllSessionExcludeCurrentCommand } from '../application/use-cases/deleteAllSessionExcludeCurrent.useCase';
 import { UsersService } from '../../../super-admin/users/application/users.service';
-import { UserDbViewModelType } from '../../../types';
+import { UserViewDbModelType } from '../../../types';
 import { GetUserByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserByDeviceId.useCase';
 import { GetUserIdByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserIdByDeviceId.useCase';
 
@@ -35,7 +35,7 @@ export class SecurityDeviceController {
 
   @Get()
   async getAllDevicesFromUser(@Req() req: Request & RequestWithDeviceId) {
-    const foundUser: UserDbViewModelType | null =
+    const foundUser: UserViewDbModelType | null =
       await this.userService.findUserByDeviceId(req.deviceId);
     if (foundUser)
       return await this.deviceQueryRepository.findAllActiveSessionFromUserId(
@@ -68,11 +68,11 @@ export class SecurityDeviceController {
     );
 
     if (foundDeviceByDeviceId) {
-      const foundUserByDeviceIdFromToken: UserDbViewModelType | null =
+      const foundUserByDeviceIdFromToken: UserViewDbModelType | null =
         await this.commandBus.execute(
           new GetUserByDeviceIdCommand(req.deviceId),
         );
-      const foundUserFromUriParam: UserDbViewModelType | null =
+      const foundUserFromUriParam: UserViewDbModelType | null =
         await this.commandBus.execute(new GetUserByDeviceIdCommand(deviceId));
       if (
         foundUserFromUriParam?.id.toString() ===

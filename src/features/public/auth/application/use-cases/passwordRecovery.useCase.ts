@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { EmailPasswordRecoveryInputModel } from '../../api/models/input/email.passwordRecovery.input.model';
 import { EmailManager } from '../../../../adapter/email.manager';
 import { UsersRepository } from '../../../../super-admin/users/infrastructure/users.repository';
-import { UserDbViewModelType } from '../../../../types';
+import { UserViewDbModelType } from '../../../../types';
 import { add } from 'date-fns/add';
 
 export class PasswordRecoveryCommand {
@@ -22,7 +22,7 @@ export class PasswordRecoveryUseCase
   ) {}
 
   async execute(command: PasswordRecoveryCommand) {
-    const foundUser: UserDbViewModelType | null =
+    const foundUser: UserViewDbModelType | null =
       await this.usersRepository.findUserByLoginOrEmail(
         command.emailPasswordRecoveryInputModel.email,
       );

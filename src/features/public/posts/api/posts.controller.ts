@@ -40,7 +40,7 @@ import { UsersService } from '../../../super-admin/users/application/users.servi
 import {
   PostLikeViewDbType,
   PostViewDbType,
-  UserDbViewModelType,
+  UserViewDbModelType,
 } from '../../../types';
 import { GetUserByDeviceIdCommand } from '../../../super-admin/users/application/use-cases/getUserByDeviceId.useCase';
 import { BlogsService } from '../../../super-admin/blogs/application/blogs.service';
@@ -70,7 +70,7 @@ export class PostsController {
       new GetPostByIdCommand(postId),
     );
     if (foundPost) {
-      const foundUser: UserDbViewModelType | null =
+      const foundUser: UserViewDbModelType | null =
         await this.commandBus.execute(
           new GetUserByDeviceIdCommand(req.deviceId),
         );
@@ -169,7 +169,7 @@ export class PostsController {
       new GetPostByIdCommand(postId),
     );
     if (foundPost) {
-      const foundUser: UserDbViewModelType = await this.commandBus.execute(
+      const foundUser: UserViewDbModelType = await this.commandBus.execute(
         new GetUserByDeviceIdCommand(req.deviceId),
       );
       if (foundUser) {
