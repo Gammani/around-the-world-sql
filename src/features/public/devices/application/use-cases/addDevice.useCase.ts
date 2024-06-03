@@ -18,7 +18,7 @@ export class AddDeviceCommand {
 export class AddDeviceUseCase implements ICommandHandler<AddDeviceCommand> {
   constructor(
     private devicesRepository: DeviceRepository,
-    @InjectModel(Device.name) private DeviceModel: Model<DeviceDocument>,
+    // @InjectModel(Device.name) private DeviceModel: Model<DeviceDocument>,
   ) {}
 
   async execute(command: AddDeviceCommand) {

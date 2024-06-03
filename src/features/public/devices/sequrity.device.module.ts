@@ -39,11 +39,11 @@ const useCases = [
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: Device.name, schema: DeviceSchema },
-      { name: User.name, schema: UserSchema },
-      { name: ExpiredToken.name, schema: ExpiredTokenSchema },
-    ]),
+    // MongooseModule.forFeature([
+    //   { name: Device.name, schema: DeviceSchema },
+    //   { name: User.name, schema: UserSchema },
+    //   { name: ExpiredToken.name, schema: ExpiredTokenSchema },
+    // ]),
     CqrsModule,
   ],
   controllers: [SecurityDeviceController],

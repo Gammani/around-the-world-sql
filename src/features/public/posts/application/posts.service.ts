@@ -10,10 +10,5 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class PostsService {
-  constructor(
-    @InjectModel(Post.name)
-    private PostModel: Model<PostDocument> &
-      PostModelWithUriBlogIdStaticType &
-      PostModelStaticType,
-  ) {}
+  constructor() {} //   PostModelStaticType, //   PostModelWithUriBlogIdStaticType & // private PostModel: Model<PostDocument> & // @InjectModel(Post.name)
 }

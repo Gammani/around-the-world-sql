@@ -16,10 +16,10 @@ const useCases = [AddExpiredRefreshTokenUseCase];
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: ExpiredToken.name, schema: ExpiredTokenSchema },
-      { name: Device.name, schema: DeviceSchema },
-    ]),
+    // MongooseModule.forFeature([
+    //   { name: ExpiredToken.name, schema: ExpiredTokenSchema },
+    //   { name: Device.name, schema: DeviceSchema },
+    // ]),
     CqrsModule,
   ],
   providers: [

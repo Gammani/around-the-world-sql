@@ -25,50 +25,50 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class CommentsQueryRepository {
   constructor(
-    @InjectModel(Comment.name) private CommentModel: Model<CommentDocument>,
-    @InjectModel(CommentLike.name)
-    private CommentLikeModel: Model<CommentLikeDocument>,
+    // @InjectModel(Comment.name) private CommentModel: Model<CommentDocument>,
+    // @InjectModel(CommentLike.name)
+    // private CommentLikeModel: Model<CommentLikeDocument>,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
-  async findCommentById(
-    id: string,
-    userId?: ObjectId | string,
-  ): Promise<CommentViewModel | null> {
-    const foundComment: CommentDbType | null = await this.CommentModel.findOne({
-      _id: id,
-    });
-
-    if (foundComment) {
-      const myStatus = await this.CommentLikeModel.findOne({
-        commentId: foundComment._id,
-        userId,
-      });
-
-      return {
-        id: foundComment._id.toString(),
-        content: foundComment.content,
-        commentatorInfo: {
-          userId: foundComment.commentatorInfo.userId,
-          userLogin: foundComment.commentatorInfo.userLogin,
-        },
-        createdAt: foundComment.createdAt,
-        likesInfo: {
-          likesCount: await this.CommentLikeModel.find({
-            commentId: foundComment._id,
-            likeStatus: LikeStatus.Like,
-          }).countDocuments({}),
-          dislikesCount: await this.CommentLikeModel.find({
-            commentId: foundComment._id,
-            likeStatus: LikeStatus.Dislike,
-          }).countDocuments({}),
-          myStatus: myStatus ? myStatus.likeStatus : LikeStatus.None,
-        },
-      };
-    } else {
-      return null;
-    }
-  }
+  // async findCommentById(
+  //   id: string,
+  //   userId?: ObjectId | string,
+  // ): Promise<CommentViewModel | null> {
+  //   const foundComment: CommentDbType | null = await this.CommentModel.findOne({
+  //     _id: id,
+  //   });
+  //
+  //   if (foundComment) {
+  //     const myStatus = await this.CommentLikeModel.findOne({
+  //       commentId: foundComment._id,
+  //       userId,
+  //     });
+  //
+  //     return {
+  //       id: foundComment._id.toString(),
+  //       content: foundComment.content,
+  //       commentatorInfo: {
+  //         userId: foundComment.commentatorInfo.userId,
+  //         userLogin: foundComment.commentatorInfo.userLogin,
+  //       },
+  //       createdAt: foundComment.createdAt,
+  //       likesInfo: {
+  //         likesCount: await this.CommentLikeModel.find({
+  //           commentId: foundComment._id,
+  //           likeStatus: LikeStatus.Like,
+  //         }).countDocuments({}),
+  //         dislikesCount: await this.CommentLikeModel.find({
+  //           commentId: foundComment._id,
+  //           likeStatus: LikeStatus.Dislike,
+  //         }).countDocuments({}),
+  //         myStatus: myStatus ? myStatus.likeStatus : LikeStatus.None,
+  //       },
+  //     };
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   async getQueryCommentByComment(
     comment: CommentViewDbType,
@@ -182,31 +182,40 @@ export class CommentsQueryRepository {
 
   async getLikeInfo(
     comment: CommentViewDbModelType,
-    userId?: ObjectId | string | null | undefined,
+    userId?: string | null | undefined,
   ) {
     let myStatus: CommentLikeViewDbType | null = null;
 
+    //     if (userId) {
+    //       const foundCommentLike = await this.dataSource.query(
+    //         `SELECT id, "userId", login, "blogId", "postId", "commentId", "likeStatus", "addedAt", "lastUpdate"
+    // FROM public."CommentsLikes"
+    // WHERE "commentId" = $1`,
+    //         [comment.id],
+    //       );
+    //       myStatus = foundCommentLike.length > 0 ? foundCommentLike[0] : null;
+    //     }
+
     if (userId) {
-      const foundCommentLike = await this.dataSource.query(
+      myStatus = await this.dataSource.query(
         `SELECT id, "userId", login, "blogId", "postId", "commentId", "likeStatus", "addedAt", "lastUpdate"
 FROM public."CommentsLikes"
-WHERE "commentId" = $1`,
-        [comment.id],
+WHERE "commentId" = $1 AND "userId" = $2`,
+        [comment.id, userId],
       );
-      myStatus = foundCommentLike.length > 0 ? foundCommentLike[0] : null;
     }
 
     const likesCount = await this.dataSource.query(
       `SELECT id, "userId", login, "blogId", "postId", "commentId", "likeStatus", "addedAt", "lastUpdate"
 FROM public."CommentsLikes"
-WHERE "likeStatus" = $1`,
-      [LikeStatus.Like],
+WHERE "commentId" = $1 AND "likeStatus" = $2`,
+      [comment.id, LikeStatus.Like],
     );
     const dislikesCount = await this.dataSource.query(
       `SELECT id, "userId", login, "blogId", "postId", "commentId", "likeStatus", "addedAt", "lastUpdate"
 FROM public."CommentsLikes"
-WHERE "likeStatus" = $1`,
-      [LikeStatus.Dislike],
+WHERE "commentId" = $1 AND "likeStatus" = $2`,
+      [comment.id, LikeStatus.Dislike],
     );
     return {
       id: comment.id,
@@ -219,7 +228,7 @@ WHERE "likeStatus" = $1`,
       likesInfo: {
         likesCount: likesCount.length,
         dislikesCount: dislikesCount.length,
-        myStatus: myStatus ? myStatus.likeStatus : LikeStatus.None,
+        myStatus: myStatus?.[0] ? myStatus[0].likeStatus : LikeStatus.None,
       },
     };
   }
@@ -235,7 +244,11 @@ FROM public."CommentsLikes"
 WHERE "commentId" = $1 AND "userId" = $2`,
         [commentId, userId],
       );
-      return myStatus[0].likeStatus;
+      if (myStatus.length > 0) {
+        return myStatus[0].likeStatus;
+      } else {
+        return null;
+      }
     } else {
       return null;
     }

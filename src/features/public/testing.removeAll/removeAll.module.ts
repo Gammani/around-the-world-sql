@@ -28,16 +28,16 @@ import { SharingModule } from '../../../settings/sharingModules/sharingModule';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: Blog.name, schema: BlogSchema },
-      { name: Post.name, schema: PostSchema },
-      { name: Comment.name, schema: CommentSchema },
-      { name: Device.name, schema: DeviceSchema },
-      { name: PostLike.name, schema: PostLikeSchema },
-      { name: CommentLike.name, schema: CommentLikeSchema },
-      { name: ExpiredToken.name, schema: ExpiredTokenSchema },
-    ]),
+    // MongooseModule.forFeature([
+    //   { name: User.name, schema: UserSchema },
+    //   { name: Blog.name, schema: BlogSchema },
+    //   { name: Post.name, schema: PostSchema },
+    //   { name: Comment.name, schema: CommentSchema },
+    //   { name: Device.name, schema: DeviceSchema },
+    //   { name: PostLike.name, schema: PostLikeSchema },
+    //   { name: CommentLike.name, schema: CommentLikeSchema },
+    //   { name: ExpiredToken.name, schema: ExpiredTokenSchema },
+    // ]),
     SharingModule,
   ],
   controllers: [TestingRemoveAll],

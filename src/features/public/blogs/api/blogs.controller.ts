@@ -16,6 +16,10 @@ import { PostsWithPaginationViewModel } from '../../posts/api/models/output/post
 import { GetAllQueryBlogsCommand } from '../application/use-cases/getAllQueryBlogs.useCase';
 import { GetQueryPostsCommand } from '../../posts/application/use-cases/getQueryPostsUseCase';
 import { GetQueryBlogByIdCommand } from '../application/use-cases/getQueryBlogById.useCase';
+import { Request } from 'express';
+import { PostViewDbType } from '../../../types';
+import { GetPostByIdCommand } from '../../posts/application/use-cases/getPostById.useCase';
+import { GetQueryPostByIdCommand } from '../../posts/application/use-cases/getQueryPostById.useCase';
 
 @Controller('blogs')
 export class BlogsController {
@@ -89,6 +93,24 @@ export class BlogsController {
     );
     if (foundBlog) {
       return foundBlog;
+    } else {
+      throw new NotFoundException();
+    }
+  }
+
+  @Get(':blogId/posts/:id')
+  async findPostById(
+    @Param('id') postId: string,
+    @Req() req: Request & RequestWithUserId,
+  ) {
+    const foundPost: PostViewDbType | null = await this.commandBus.execute(
+      new GetPostByIdCommand(postId),
+    );
+    if (foundPost) {
+      return await this.commandBus.execute(
+        new GetQueryPostByIdCommand(foundPost, req.user?.userId),
+      );
+      // return console.log(res);
     } else {
       throw new NotFoundException();
     }

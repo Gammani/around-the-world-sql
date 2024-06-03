@@ -196,6 +196,7 @@ export class PostsController {
       return await this.commandBus.execute(
         new GetQueryPostByIdCommand(foundPost, req.user?.userId),
       );
+      // return console.log(res);
     } else {
       throw new NotFoundException();
     }

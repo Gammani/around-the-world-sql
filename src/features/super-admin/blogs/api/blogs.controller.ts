@@ -41,6 +41,8 @@ import { RemoveBlogByAdminCommand } from '../application/use-cases/removeBlogByA
 import { GetQueryBlogByIdCommand } from '../../../public/blogs/application/use-cases/getQueryBlogById.useCase';
 import { BlogWithPaginationViewModel } from '../../../public/blogs/api/models/output/blog.output.model';
 import { GetAllQueryBlogsCommand } from '../../../public/blogs/application/use-cases/getAllQueryBlogs.useCase';
+import { Request } from 'express';
+import { GetQueryPostByIdCommand } from '../../../public/posts/application/use-cases/getQueryPostById.useCase';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/blogs')
@@ -233,6 +235,24 @@ export class BlogsController {
       } else {
         throw new NotFoundException();
       }
+    } else {
+      throw new NotFoundException();
+    }
+  }
+
+  @Get(':blogId/posts/:id')
+  async findPostById(
+    @Param('id') postId: string,
+    @Req() req: Request & RequestWithUserId,
+  ) {
+    const foundPost: PostViewDbType | null = await this.commandBus.execute(
+      new GetPostByIdCommand(postId),
+    );
+    if (foundPost) {
+      return await this.commandBus.execute(
+        new GetQueryPostByIdCommand(foundPost, req.user?.userId),
+      );
+      // return console.log(res);
     } else {
       throw new NotFoundException();
     }

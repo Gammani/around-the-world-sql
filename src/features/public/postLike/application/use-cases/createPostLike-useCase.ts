@@ -28,8 +28,8 @@ export class CreatePostLikeUseCase
   implements ICommandHandler<CreatePostLikeCommand>
 {
   constructor(
-    @InjectModel(PostLike.name)
-    private PostLikeModel: Model<PostLikeDocument> & PostLikeModelStaticType,
+    // @InjectModel(PostLike.name)
+    // private PostLikeModel: Model<PostLikeDocument> & PostLikeModelStaticType,
     private postLikeRepository: PostLikeRepository,
   ) {}
 

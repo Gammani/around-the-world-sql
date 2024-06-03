@@ -14,8 +14,8 @@ import { v1 as uuidv1 } from 'uuid';
 @Injectable()
 export class ExpiredTokenRepository {
   constructor(
-    @InjectModel(ExpiredToken.name)
-    private ExpiredTokenModel: Model<ExpiredTokenDocument>,
+    // @InjectModel(ExpiredToken.name)
+    // private ExpiredTokenModel: Model<ExpiredTokenDocument>,
     private passwordAdapter: PasswordAdapter,
     @InjectDataSource() private dataSource: DataSource,
   ) {}

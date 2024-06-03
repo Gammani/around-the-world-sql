@@ -13,7 +13,7 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class BlogsQueryRepository {
   constructor(
-    @InjectModel(Blog.name) private BlogModel: Model<BlogDocument>,
+    // @InjectModel(Blog.name) private BlogModel: Model<BlogDocument>,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 

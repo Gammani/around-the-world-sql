@@ -16,8 +16,8 @@ export class BlogsService {
     private blogsRepository: BlogsRepository,
     private postsRepository: PostsRepository,
 
-    @InjectModel(Blog.name)
-    private BlogModel: Model<BlogDocument> & BlogModelStaticType,
+    // @InjectModel(Blog.name)){}
+    // private BlogModel: Model<BlogDocument> & BlogModelStaticType,
   ) {}
 
   // async findBlogById(blogId: string): Promise<BlogDbType | null> {

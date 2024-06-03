@@ -18,8 +18,8 @@ export class CommentsRepository {
   constructor(
     @InjectDataSource()
     private dataSource: DataSource,
-    @InjectModel(Comment.name)
-    private CommentModel: Model<CommentDocument> & CommentModelStaticType,
+    // @InjectModel(Comment.name)
+    // private CommentModel: Model<CommentDocument> & CommentModelStaticType,
   ) {}
 
   async findCommentById(commentId: string): Promise<CommentViewDbType | null> {
@@ -84,12 +84,12 @@ VALUES ($1, $2, $3, $4, $5, $6)`,
     };
   }
 
-  async findCommentByPostId(postId: string) {
-    return this.CommentModel.findOne({ _postId: postId });
-  }
-  async findCommentByContent(content: string) {
-    return this.CommentModel.findOne({ content: content });
-  }
+  // async findCommentByPostId(postId: string) {
+  //   return this.CommentModel.findOne({ _postId: postId });
+  // }
+  // async findCommentByContent(content: string) {
+  //   return this.CommentModel.findOne({ content: content });
+  // }
   async updateComment(commentId: string, content: string): Promise<boolean> {
     try {
       await this.dataSource.query(

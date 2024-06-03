@@ -14,8 +14,8 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class DeviceQueryRepository {
   constructor(
-    @InjectModel(Device.name)
-    private DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
+    // @InjectModel(Device.name)
+    // private DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 

@@ -7,9 +7,5 @@ import {
 import { Model } from 'mongoose';
 
 export class CommentLikeService {
-  constructor(
-    @InjectModel(CommentLike.name)
-    private CommentLikeModel: Model<CommentLikeDocument> &
-      CommentLikeModelStaticType,
-  ) {}
+  constructor() {} //   CommentLikeModelStaticType, // private CommentLikeModel: Model<CommentLikeDocument> & // @InjectModel(CommentLike.name)
 }

@@ -17,8 +17,8 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class PostLikeRepository {
   constructor(
-    @InjectModel(PostLike.name)
-    private PostLikeModel: Model<PostLikeDocument> & PostLikeModelStaticType,
+    // @InjectModel(PostLike.name)
+    // private PostLikeModel: Model<PostLikeDocument> & PostLikeModelStaticType,
     @InjectDataSource()
     private dataSource: DataSource,
   ) {}

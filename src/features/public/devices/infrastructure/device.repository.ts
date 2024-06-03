@@ -20,8 +20,8 @@ import { InjectDataSource } from '@nestjs/typeorm';
 @Injectable()
 export class DeviceRepository {
   constructor(
-    @InjectModel(Device.name)
-    private DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
+    // @InjectModel(Device.name)
+    // private DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
   async createDevice(
@@ -85,20 +85,20 @@ WHERE id = $2;`,
     );
   }
 
-  async findDeviceFromUserId(
-    deviceId: string,
-    userId: ObjectId,
-  ): Promise<boolean> {
-    const result = await this.DeviceModel.findOne({
-      _id: deviceId,
-      userId: userId,
-    });
-    if (result) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  // async findDeviceFromUserId(
+  //   deviceId: string,
+  //   userId: ObjectId,
+  // ): Promise<boolean> {
+  //   const result = await this.DeviceModel.findOne({
+  //     _id: deviceId,
+  //     userId: userId,
+  //   });
+  //   if (result) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
   async findDeviceByDeviceId(
     deviceId: string,
   ): Promise<DeviceDbViewModelType | null> {
@@ -153,6 +153,11 @@ AND "Device"."userId" = $2`,
   }
   // для своего теста
   async findDeviceTestByUserId(userId: string) {
-    return this.DeviceModel.findOne({ userId: userId });
+    return await this.dataSource.query(
+      `SELECT id, ip, "deviceName", "lastActiveDate", "userId"
+FROM public."Device"
+WHERE "userId" = $1;`,
+      [userId],
+    );
   }
 }

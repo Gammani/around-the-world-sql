@@ -19,8 +19,8 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class BlogsRepository {
   constructor(
-    @InjectModel(Blog.name)
-    private BlogModel: Model<BlogDocument> & BlogModelStaticType,
+    // @InjectModel(Blog.name)
+    // private BlogModel: Model<BlogDocument> & BlogModelStaticType,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
@@ -118,6 +118,11 @@ WHERE id = $1`,
   }
   // for tests
   async findBlogByName(blogName: string) {
-    return this.BlogModel.findOne({ name: blogName });
+    return this.dataSource.query(
+      `SELECT id, name, description, "websiteUrl", "createdAt", "isMembership"
+FROM public."Blogs"
+WHERE "name" = $1`,
+      [blogName],
+    );
   }
 }

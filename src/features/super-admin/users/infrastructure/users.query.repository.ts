@@ -14,7 +14,7 @@ import { validate as validateUUID } from 'uuid';
 export class UsersQueryRepository {
   constructor(
     @InjectDataSource() private dataSource: DataSource,
-    @InjectModel(User.name) private UserModel: Model<UserDocument>,
+    // @InjectModel(User.name) private UserModel: Model<UserDocument>,
   ) {}
 
   async findAllUsers(

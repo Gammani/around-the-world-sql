@@ -26,8 +26,8 @@ export class CreateCommentUseCase
   implements ICommandHandler<CreateCommentCommand>
 {
   constructor(
-    @InjectModel(Comment.name)
-    private CommentModel: Model<CommentDocument> & CommentModelStaticType,
+    // @InjectModel(Comment.name)
+    // private CommentModel: Model<CommentDocument> & CommentModelStaticType,
     private commentsRepository: CommentsRepository,
   ) {}
 

@@ -13,8 +13,8 @@ import { ObjectId } from 'mongodb';
 export class SecurityDevicesService {
   constructor(
     protected devicesRepository: DeviceRepository,
-    @InjectModel(Device.name)
-    private DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
+    // @InjectModel(Device.name)
+    // private DeviceModel: Model<DeviceDocument> & DeviceModelStaticType,
   ) {}
   async findUserIdByDeviceId(deviceId: string): Promise<string | null> {
     return this.devicesRepository.findUserIdByDeviceId(deviceId);

@@ -18,9 +18,9 @@ import { DataSource } from 'typeorm';
 export class CommentLikeRepository {
   constructor(
     @InjectDataSource() private dataSource: DataSource,
-    @InjectModel(CommentLike.name)
-    private CommentLikeModel: Model<CommentLikeDocument> &
-      CommentLikeModelStaticType,
+    // @InjectModel(CommentLike.name)
+    // private CommentLikeModel: Model<CommentLikeDocument> &
+    //   CommentLikeModelStaticType,
   ) {}
 
   async findLike(

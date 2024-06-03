@@ -14,8 +14,8 @@ export class UsersService {
     protected passwordAdapter: PasswordAdapter,
     protected usersRepository: UsersRepository,
     protected securityDevicesService: SecurityDevicesService,
-    @InjectModel(User.name)
-    private UserModel: Model<UserDocument> & UserModelStaticType,
+    // @InjectModel(User.name)
+    // private UserModel: Model<UserDocument> & UserModelStaticType,
   ) {}
 
   async findUserByDeviceId(

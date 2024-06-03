@@ -63,17 +63,17 @@ const useCases = [
 @Global()
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: Blog.name, schema: BlogSchema },
-      { name: Post.name, schema: PostSchema },
-      { name: Comment.name, schema: CommentSchema },
-      { name: PostLike.name, schema: PostLikeSchema },
-      { name: CommentLike.name, schema: CommentLikeSchema },
-      { name: PostLike.name, schema: PostLikeSchema },
-      { name: Device.name, schema: DeviceSchema },
-      { name: ExpiredToken.name, schema: ExpiredTokenSchema },
-    ]),
+    // MongooseModule.forFeature([
+    //   { name: User.name, schema: UserSchema },
+    //   { name: Blog.name, schema: BlogSchema },
+    //   { name: Post.name, schema: PostSchema },
+    //   { name: Comment.name, schema: CommentSchema },
+    //   { name: PostLike.name, schema: PostLikeSchema },
+    //   { name: CommentLike.name, schema: CommentLikeSchema },
+    //   { name: PostLike.name, schema: PostLikeSchema },
+    //   { name: Device.name, schema: DeviceSchema },
+    //   { name: ExpiredToken.name, schema: ExpiredTokenSchema },
+    // ]),
     SharingModule,
   ],
   controllers: [PostsController],

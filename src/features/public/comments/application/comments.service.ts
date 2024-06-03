@@ -9,8 +9,5 @@ import {
 
 @Injectable()
 export class CommentsService {
-  constructor(
-    @InjectModel(Comment.name)
-    private CommentModel: Model<CommentDocument> & CommentModelStaticType,
-  ) {}
+  constructor() {} // private CommentModel: Model<CommentDocument> & CommentModelStaticType, // @InjectModel(Comment.name)
 }

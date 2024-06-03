@@ -21,8 +21,8 @@ export class PostsRepository {
   constructor(
     @InjectDataSource()
     private dataSource: DataSource,
-    @InjectModel(Post.name)
-    private PostModel: Model<PostDocument & PostModelWithUriBlogIdStaticType>,
+    // @InjectModel(Post.name)
+    // private PostModel: Model<PostDocument & PostModelWithUriBlogIdStaticType>,
   ) {}
 
   async findPostById(postId: string): Promise<PostViewDbType | null> {
@@ -132,6 +132,11 @@ WHERE "blogId" = $1`,
 
   // for tests
   async findPostByTitle(postTitle: string) {
-    return this.PostModel.findOne({ title: postTitle });
+    return this.dataSource.query(
+      `SELECT id, title, "shortDescription", content, "blogId", "blogName", "createdAt"
+FROM public."Posts"
+WHERE "title" = $1`,
+      [postTitle],
+    );
   }
 }

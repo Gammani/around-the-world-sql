@@ -51,13 +51,13 @@ const useCases = [
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: Comment.name, schema: CommentSchema },
-      { name: User.name, schema: UserSchema },
-      { name: Device.name, schema: DeviceSchema },
-      { name: ExpiredToken.name, schema: ExpiredTokenSchema },
-      { name: CommentLike.name, schema: CommentLikeSchema },
-    ]),
+    // MongooseModule.forFeature([
+    //   { name: Comment.name, schema: CommentSchema },
+    //   { name: User.name, schema: UserSchema },
+    //   { name: Device.name, schema: DeviceSchema },
+    //   { name: ExpiredToken.name, schema: ExpiredTokenSchema },
+    //   { name: CommentLike.name, schema: CommentLikeSchema },
+    // ]),
     CqrsModule,
   ],
   controllers: [CommentsController],

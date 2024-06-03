@@ -16,9 +16,10 @@ export class FoundDeviceFromUserUseCase
   constructor(private deviceRepository: DeviceRepository) {}
 
   async execute(command: FoundDeviceFromUserCommand): Promise<boolean> {
-    return this.deviceRepository.findDeviceFromUserId(
-      command.deviceIdFromUri,
-      command.userIdFromToken,
-    );
+    // return this.deviceRepository.findDeviceFromUserId(
+    //   command.deviceIdFromUri,
+    //   command.userIdFromToken,
+    // );
+    return true;
   }
 }

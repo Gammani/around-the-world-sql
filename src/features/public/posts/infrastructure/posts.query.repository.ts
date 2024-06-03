@@ -18,8 +18,8 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class PostsQueryRepository {
   constructor(
-    @InjectModel(Post.name) private PostModel: Model<PostDocument>,
-    @InjectModel(PostLike.name) private PostLikeModel: Model<PostLikeDocument>,
+    // @InjectModel(Post.name) private PostModel: Model<PostDocument>,
+    // @InjectModel(PostLike.name) private PostLikeModel: Model<PostLikeDocument>,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
@@ -121,7 +121,6 @@ FROM public."Posts"`);
   ): Promise<customFilteredPostLikesType | undefined> {
     try {
       let myStatus: PostLikeViewDbType | null = null;
-
       if (userId) {
         myStatus = await this.dataSource.query(
           `SELECT id, "userId", "blogId", "postId", login, "likeStatus", "addedAt", "lastUpdate"
@@ -130,7 +129,6 @@ WHERE "postId"=$1 AND "userId"=$2`,
           [post.id, userId],
         );
       }
-
       const newestLikes: PostLikeViewDbType[] = await this.dataSource.query(
         `SELECT id, "userId", "blogId", "postId", login, "likeStatus", "addedAt", "lastUpdate"
 FROM public."PostLike"
@@ -157,7 +155,7 @@ WHERE "postId" = $1 AND "likeStatus" = $2`,
 
       const newestLikesInfo = newestLikes.map((nl: PostLikeViewDbType) => ({
         addedAt: nl.addedAt.toISOString(),
-        userId: nl.userId.toString(),
+        userId: nl.userId,
         login: nl.login,
       }));
 
@@ -172,7 +170,7 @@ WHERE "postId" = $1 AND "likeStatus" = $2`,
         extendedLikesInfo: {
           likesCount: likesCount,
           dislikesCount: dislikesCount,
-          myStatus: myStatus ? myStatus.likeStatus : LikeStatus.None,
+          myStatus: myStatus?.[0] ? myStatus[0].likeStatus : LikeStatus.None,
           newestLikes: newestLikesInfo,
         },
       };

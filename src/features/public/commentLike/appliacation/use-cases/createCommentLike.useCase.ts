@@ -28,9 +28,9 @@ export class CreateCommentLikeUseCase
   implements ICommandHandler<CreateCommentLikeCommand>
 {
   constructor(
-    @InjectModel(CommentLike.name)
-    private CommentLikeModel: Model<CommentLikeDocument> &
-      CommentLikeModelStaticType,
+    // @InjectModel(CommentLike.name)
+    // private CommentLikeModel: Model<CommentLikeDocument> &
+    //   CommentLikeModelStaticType,
     private commentLikeRepository: CommentLikeRepository,
   ) {}
 

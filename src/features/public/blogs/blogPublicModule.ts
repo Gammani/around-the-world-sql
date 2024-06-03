@@ -27,11 +27,11 @@ const useCases = [
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: Blog.name, schema: BlogSchema },
-      { name: Post.name, schema: PostSchema },
-      { name: PostLike.name, schema: PostLikeSchema },
-    ]),
+    // MongooseModule.forFeature([
+    //   { name: Blog.name, schema: BlogSchema },
+    //   { name: Post.name, schema: PostSchema },
+    //   { name: PostLike.name, schema: PostLikeSchema },
+    // ]),
     PostModule,
     SharingModule,
   ],

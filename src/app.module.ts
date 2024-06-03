@@ -33,10 +33,10 @@ import { BlogPublicModule } from './features/public/blogs/blogPublicModule';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.MONGO_URL || 'mongodb://0.0.0.0:27017', {
-      dbName: 'around-the-world',
-    }),
+    // ConfigModule.forRoot(),
+    // MongooseModule.forRoot(process.env.MONGO_URL || 'mongodb://0.0.0.0:27017', {
+    //   dbName: 'around-the-world',
+    // }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -58,10 +58,10 @@ import { BlogPublicModule } from './features/public/blogs/blogPublicModule';
     CommentModule,
     ExpiredTokenModule,
     SecurityDeviceModule,
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: Device.name, schema: DeviceSchema },
-    ]),
+    // MongooseModule.forFeature([
+    //   { name: User.name, schema: UserSchema },
+    //   { name: Device.name, schema: DeviceSchema },
+    // ]),
   ],
   controllers: [AppController],
   providers: [

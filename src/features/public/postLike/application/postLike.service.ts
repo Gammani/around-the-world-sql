@@ -9,8 +9,5 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class PostLikeService {
-  constructor(
-    @InjectModel(PostLike.name)
-    private PostLikeModel: Model<PostLikeDocument> & PostLikeModelStaticType,
-  ) {}
+  constructor() {} // private PostLikeModel: Model<PostLikeDocument> & PostLikeModelStaticType, // @InjectModel(PostLike.name)
 }

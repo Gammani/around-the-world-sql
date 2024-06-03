@@ -18,7 +18,7 @@ import { add } from 'date-fns/add';
 @Injectable()
 export class UsersRepository {
   constructor(
-    @InjectModel(User.name) private UserModel: Model<UserDocument>,
+    // @InjectModel(User.name) private UserModel: Model<UserDocument>,
     @InjectDataSource() private dataSource: DataSource,
   ) {}
 
@@ -57,11 +57,11 @@ WHERE account."id" = $1`,
     }
   }
 
-  async findUserByEmail(email: string): Promise<UserDbType | null> {
-    return this.UserModel.findOne({
-      'accountData.email': email,
-    });
-  }
+  // async findUserByEmail(email: string): Promise<UserDbType | null> {
+  //   return this.UserModel.findOne({
+  //     'accountData.email': email,
+  //   });
+  // }
 
   async findUserByConfirmationCode(
     confirmationCode: string,

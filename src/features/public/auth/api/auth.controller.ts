@@ -43,7 +43,7 @@ import { GetUserViewModelByDeviceIdCommand } from '../../../super-admin/users/ap
 import { RegistrationResendCodeCommand } from '../application/use-cases/registrationResendCode.useCase';
 import { AddExpiredRefreshTokenCommand } from '../application/use-cases/addExpiredRefreshTokenUseCase';
 
-@UseGuards(ThrottlerGuard)
+// @UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(

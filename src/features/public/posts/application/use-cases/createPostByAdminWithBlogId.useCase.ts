@@ -27,10 +27,10 @@ export class CreatePostByAdminWithBlogIdUseCase
   implements ICommandHandler<CreatePostByAdminWithBlogIdCommand>
 {
   constructor(
-    @InjectModel(Post.name)
-    private PostModel: Model<PostDocument> &
-      PostModelWithUriBlogIdStaticType &
-      PostModelStaticType,
+    // @InjectModel(Post.name)
+    // private PostModel: Model<PostDocument> &
+    //   PostModelWithUriBlogIdStaticType &
+    //   PostModelStaticType,
     private postsRepository: PostsRepository,
   ) {}
 

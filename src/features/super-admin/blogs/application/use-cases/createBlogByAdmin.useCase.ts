@@ -22,8 +22,8 @@ export class CreateBlogByAdminUseCase
   implements ICommandHandler<CreateBlogByAdminCommand>
 {
   constructor(
-    @InjectModel(Blog.name)
-    private BlogModel: Model<BlogDocument> & BlogModelStaticType,
+    // @InjectModel(Blog.name)
+    // private BlogModel: Model<BlogDocument> & BlogModelStaticType,
     private blogsRepository: BlogsRepository,
   ) {}
 

@@ -56,11 +56,11 @@ const decorators = [
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: Device.name, schema: DeviceSchema },
-      { name: ExpiredToken.name, schema: ExpiredTokenSchema },
-    ]),
+    // MongooseModule.forFeature([
+    //   { name: User.name, schema: UserSchema },
+    //   { name: Device.name, schema: DeviceSchema },
+    //   { name: ExpiredToken.name, schema: ExpiredTokenSchema },
+    // ]),
     ThrottlerModule.forRoot([
       {
         ttl: 10000,
