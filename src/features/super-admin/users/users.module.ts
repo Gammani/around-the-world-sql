@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './domain/user.entity';
 import { UsersController } from './api/users.controller';
 import { UsersService } from './application/users.service';
 import { UsersRepository } from './infrastructure/users.repository';
@@ -12,14 +10,6 @@ import { GetAllQueryUsersUseCase } from './application/use-cases/getAllQueryUser
 import { GetUserByIdUseCase } from './application/use-cases/getUserById.useCase';
 import { CreateUserByAdminUseCase } from './application/use-cases/createUserByAdmin.useCase';
 import { DeleteUserByAdminUseCase } from './application/use-cases/deleteUserByAdmin.useCase';
-import {
-  Device,
-  DeviceSchema,
-} from '../../public/devices/domain/devices.entity';
-import {
-  ExpiredToken,
-  ExpiredTokenSchema,
-} from '../../public/expiredToken/domain/expired-token.entity';
 import { PasswordAdapter } from '../../adapter/password.adapter';
 import { EmailManager } from '../../adapter/email.manager';
 import { SecurityDevicesService } from '../../public/devices/application/security.devices.service';
@@ -28,6 +18,9 @@ import { ExpiredTokenRepository } from '../../public/expiredToken/infrastructure
 import { GetUserViewModelByUserIdUseCase } from './application/use-cases/getUserViewModelByUserId.useCase';
 import { GetUserIdByDeviceIdUseCase } from './application/use-cases/getUserIdByDeviceId.useCase';
 import { SharingModule } from '../../../settings/sharingModules/sharingModule';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserAccountDataEntity } from './domain/userAccountData.entity';
+import { UserEmailDataEntity } from './domain/userEmailData.entity';
 
 const useCases = [
   CreateUserUserCase,
@@ -43,14 +36,7 @@ const useCases = [
 
 @Module({
   imports: [
-    // MongooseModule.forFeature([
-    //   {
-    //     name: User.name,
-    //     schema: UserSchema,
-    //   },
-    //   { name: Device.name, schema: DeviceSchema },
-    //   { name: ExpiredToken.name, schema: ExpiredTokenSchema },
-    // ]),
+    TypeOrmModule.forFeature([UserAccountDataEntity, UserEmailDataEntity]),
     SharingModule,
   ],
   controllers: [UsersController],

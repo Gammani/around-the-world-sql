@@ -1,7 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { User, UserDocument } from '../domain/user.entity';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
 import {
   UserAccountDataSqlType,
   UserDbType,
@@ -17,10 +14,7 @@ import { add } from 'date-fns/add';
 
 @Injectable()
 export class UsersRepository {
-  constructor(
-    // @InjectModel(User.name) private UserModel: Model<UserDocument>,
-    @InjectDataSource() private dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private dataSource: DataSource) {}
 
   async findUserById(userId: string): Promise<UserViewDbModelType | null> {
     if (validateUUID(userId)) {

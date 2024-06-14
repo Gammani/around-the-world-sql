@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../infrastructure/users.repository';
-import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument, UserModelStaticType } from '../domain/user.entity';
-import { Model } from 'mongoose';
-import { ObjectId } from 'mongodb';
 import { PasswordAdapter } from '../../../adapter/password.adapter';
 import { SecurityDevicesService } from '../../../public/devices/application/security.devices.service';
 import { UserViewDbModelType } from '../../../types';
@@ -14,8 +10,6 @@ export class UsersService {
     protected passwordAdapter: PasswordAdapter,
     protected usersRepository: UsersRepository,
     protected securityDevicesService: SecurityDevicesService,
-    // @InjectModel(User.name)
-    // private UserModel: Model<UserDocument> & UserModelStaticType,
   ) {}
 
   async findUserByDeviceId(

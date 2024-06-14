@@ -35,7 +35,6 @@ import { CreatePostByAdminUseCase } from './application/use-cases/createPostByAd
 import { GetQueryPostByIdUseCase } from './application/use-cases/getQueryPostById.useCase';
 import { UpdatePostByAdminUseCase } from './application/use-cases/updatePostByAdmin.useCase';
 import { DeletePostByAdminUseCase } from './application/use-cases/deletePostByAdmin.useCase';
-import { User, UserSchema } from '../../super-admin/users/domain/user.entity';
 import { UsersService } from '../../super-admin/users/application/users.service';
 import { UsersRepository } from '../../super-admin/users/infrastructure/users.repository';
 import { UsersQueryRepository } from '../../super-admin/users/infrastructure/users.query.repository';
@@ -43,7 +42,6 @@ import { BlogIdIsExistConstraint } from '../../../infrastructure/decorators/vali
 import { PasswordAdapter } from '../../adapter/password.adapter';
 import { EmailManager } from '../../adapter/email.manager';
 import { SharingModule } from '../../../settings/sharingModules/sharingModule';
-import { Blog, BlogSchema } from '../../super-admin/blogs/domain/blogs.entity';
 import { BlogsService } from '../../super-admin/blogs/application/blogs.service';
 import { BlogsRepository } from '../../super-admin/blogs/infrastructure/blogs.repository';
 
@@ -62,20 +60,7 @@ const useCases = [
 
 @Global()
 @Module({
-  imports: [
-    // MongooseModule.forFeature([
-    //   { name: User.name, schema: UserSchema },
-    //   { name: Blog.name, schema: BlogSchema },
-    //   { name: Post.name, schema: PostSchema },
-    //   { name: Comment.name, schema: CommentSchema },
-    //   { name: PostLike.name, schema: PostLikeSchema },
-    //   { name: CommentLike.name, schema: CommentLikeSchema },
-    //   { name: PostLike.name, schema: PostLikeSchema },
-    //   { name: Device.name, schema: DeviceSchema },
-    //   { name: ExpiredToken.name, schema: ExpiredTokenSchema },
-    // ]),
-    SharingModule,
-  ],
+  imports: [SharingModule],
   controllers: [PostsController],
   providers: [
     UsersService,
